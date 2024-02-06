@@ -4,7 +4,7 @@ let counter = 0;
 updateDisplay(counter);
 
 btnCounter!.addEventListener('click', () => {
-    counter += 2;
+    counter += 1;
     console.log(counter);
     updateDisplay(counter);
 });
