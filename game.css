@@ -1,0 +1,16 @@
+body {
+    background-image: url("images/avengers-logo.jpg");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-position:center center;
+
+    text-align: center;
+    padding: 150px;
+
+    color: #FFFFFF;
+  }
+
+button:hover, button:active {
+    background-color: rgb(255, 255, 255);
+}
