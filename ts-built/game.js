@@ -2,7 +2,7 @@ var btnCounter = document.querySelector("#btncounter");
 var counter = 0;
 updateDisplay(counter);
 btnCounter.addEventListener('click', function () {
-    counter += 2;
+    counter += 1;
     console.log(counter);
     updateDisplay(counter);
 });

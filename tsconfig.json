@@ -3,6 +3,8 @@
         "module": "commonjs",
         "target": "ES5",
         "outDir": "ts-built",
-        "rootDir": ""
+        "rootDir": "",
+        "resolveJsonModule": true,
+        "esModuleInterop": true
     }
 }
