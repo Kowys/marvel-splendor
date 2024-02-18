@@ -3,7 +3,17 @@ import {Board} from './board.js'
 
 const btnCounter = document.querySelector("#btncounter");
 const dealButton = document.querySelector("#deal");
-let counter = 0;
+
+const pick3Button = document.querySelector("#pick-3");
+const pick2Button = document.querySelector("#pick-2");
+const reserveButton = document.querySelector("#reserve");
+const pickCardButton = document.querySelector("#pick-card");
+
+var counter = 0;
+var pick3Select = false;
+var pick2Select = false;
+var reserveSelect = false;
+var pickCardSelect = false;
 
 updateDisplay(counter);
 
@@ -41,15 +51,59 @@ function dealCards() {
     });
 }
 
-function refreshCardsDisplay(updated: boolean) {
-    // if (updated === true) {
-    //     const cardElement = document.querySelector(".card") as HTMLElement;
-    //     console.log("updating opacity");
-    //     cardElement.style.opacity = "1.0";
-    // }
+dealButton!.addEventListener('click', () => {
     dealCards(); 
+});
+
+function updateActionButtons(buttonName: string) {
+    document.getElementById("pick-3").style.backgroundColor = null;
+    document.getElementById("pick-2").style.backgroundColor = null;
+    document.getElementById("reserve").style.backgroundColor = null;
+    document.getElementById("pick-card").style.backgroundColor = null;
+
+    document.getElementById(`${buttonName}`).style.backgroundColor = "red";
 }
 
-dealButton!.addEventListener('click', () => {
-    refreshCardsDisplay(true)
+function addConfirmButton() {         
+    document.querySelector("#confirm-button-div").innerHTML = `<button id="confirm-button">Confirm</button>`;
+}
+
+pick3Button!.addEventListener('click', () => {
+    pick3Select = true;
+    pick2Select = false;
+    reserveSelect = false;
+    pickCardSelect = false;
+
+    updateActionButtons("pick-3");
+    addConfirmButton();
+});
+
+pick2Button!.addEventListener('click', () => {
+    pick3Select = false;
+    pick2Select = true;
+    reserveSelect = false;
+    pickCardSelect = false;
+
+    updateActionButtons("pick-2");
+    addConfirmButton();
+});
+
+reserveButton!.addEventListener('click', () => {
+    pick3Select = false;
+    pick2Select = false;
+    reserveSelect = true;
+    pickCardSelect = false;
+
+    updateActionButtons("reserve");
+    addConfirmButton();
+});
+
+pickCardButton!.addEventListener('click', () => {
+    pick3Select = false;
+    pick2Select = false;
+    reserveSelect = false;
+    pickCardSelect = true;
+
+    updateActionButtons("pick-card");
+    addConfirmButton();
 });

@@ -7,10 +7,21 @@
 <button id="btncounter">Counter</button>
 
 <button id="deal">Deal cards</button>
+<br>
+<button id="start-game">Start Game</button>
 
 <div class="board">
+    <h2 id="turn-number">Turn: 0</h2>
+    <h2 id="player-turn">Player 0's turn</h2>
+
+    <h3 class="gems" id="blue-gems">Blue gems: 0</h3>
+    <h3 class="gems" id="red-gems">Red gems: 0</h3>
+    <h3 class="gems" id="yellow-gems">Yellow gems: 0</h3>
+    <h3 class="gems" id="purple-gems">Purple gems: 0</h3>
+    <h3 class="gems" id="orange-gems">Orange gems: 0</h3>
+    <h3 class="gems" id="shield-tokens">Shield tokens: 0</h3>
+
     <div class="row">
-        <h2>First Div</h2>
         <div class="column">
             <h2 class="card-container" id="level3-d"></h2>
         </div>
@@ -28,7 +39,6 @@
         </div>
     </div>
     <div class="row">
-        <h2>Second Div</h2>
         <div class="column">
             <h2 class="card-container" id="level2-d"></h2>
         </div>
@@ -46,7 +56,6 @@
         </div>
     </div>
     <div class="row">
-        <h2>Third Div</h2>
         <div class="column">
             <h2 class="card-container" id="level1-d"></h2>
         </div>
@@ -63,6 +72,32 @@
             <h2 class="card-container" id="level1-4"></h2>
         </div>
     </div>
+</div>
+
+<div class="board">
+    <h2>Player 1</h2>
+    <h3 id="player-score">Score: 0</h3>
+    <h3 class="gems" id="blue-gems">Blue gems: 0</h3>
+    <h3 class="gems" id="red-gems">Red gems: 0</h3>
+    <h3 class="gems" id="yellow-gems">Yellow gems: 0</h3>
+    <h3 class="gems" id="purple-gems">Purple gems: 0</h3>
+    <h3 class="gems" id="orange-gems">Orange gems: 0</h3>
+    <h3 class="gems" id="shield-tokens">Shield tokens: 0</h3>
+    <br>
+    <h3 class="cards" id="blue-cards">Blue cards: 0</h3>
+    <h3 class="cards" id="red-cards">Red cards: 0</h3>
+    <h3 class="cards" id="yellow-cards">Yellow cards: 0</h3>
+    <h3 class="cards" id="purple-cards">Purple cards: 0</h3>
+    <h3 class="cards" id="orange-cards">Orange cards: 0</h3>
+
+    <h2>Select Action</h2>
+
+    <button id="pick-3">Pick 3 different gems</button>
+    <button id="pick-2">Pick 2 gems of same color</button>
+    <button id="reserve">Reserve a card</button>
+    <button id="pick-card">Buy a card</button>
+    <br><br>
+    <div id="confirm-button-div"></div>
 </div>
 
 <script type="module" src="javascripts/src/interface.js"></script>
