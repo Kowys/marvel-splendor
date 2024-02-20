@@ -11,6 +11,7 @@
 <button id="start-game">Start Game</button>
 
 <div class="board">
+    <h2 id="player-count">Number of players: 0</h2>
     <h2 id="turn-number">Turn: 0</h2>
     <h2 id="player-turn">Player 0's turn</h2>
 
@@ -74,7 +75,7 @@
     </div>
 </div>
 
-<div class="board">
+<div id="player-display" class="board">
     <h2>Player 1</h2>
     <h3 id="player-score">Score: 0</h3>
     <h3 class="gems" id="blue-gems">Blue gems: 0</h3>
@@ -96,8 +97,49 @@
     <button id="pick-2">Pick 2 gems of same color</button>
     <button id="reserve">Reserve a card</button>
     <button id="pick-card">Buy a card</button>
-    <br><br>
-    <div id="confirm-button-div"></div>
+    <br>
+    <div id="pick-3-options">
+        <form id="pick3-form">
+            <h3>Select 3 gems</h3>
+            <input type="checkbox" id="pick3-blue" name="pick3" value="pick3-blue-val">Blue gem
+            <input type="checkbox" id="pick3-red" name="pick3" value="pick3-red-val">Red gem
+            <input type="checkbox" id="pick3-yellow" name="pick3" value="pick3-yellow-val">Yellow gem
+            <input type="checkbox" id="pick3-purple" name="pick3" value="pick3-purple-val">Purple gem
+            <input type="checkbox" id="pick3-orange" name="pick3" value="pick3-orange-val">Orange gem
+            <div>
+                <button type="submit">Confirm</button>
+            </div>
+        </form>
+    </div>
+    <div id="pick-2-options">
+        <form id="pick2-form">
+            <h3>Select 1 gem type</h3>
+            <input type="radio" id="pick2-blue" name="pick2">2 blue gems
+            <input type="radio" id="pick2-red" name="pick2">2 red gems
+            <input type="radio" id="pick2-yellow" name="pick2">2 yellow gems
+            <input type="radio" id="pick2-purple" name="pick2">2 purple gems
+            <input type="radio" id="pick2-orange" name="pick2">2 orange gems
+            <div>
+                <button type="submit">Confirm</button>
+            </div>
+        </form>
+    </div>
+    <div id="reserve-options">
+        <form id="reserve-form">
+            <h3>Select a card to reserve</h3>
+            <div>
+                <button type="submit">Confirm</button>
+            </div>
+        </form>
+    </div>
+    <div id="pick-card-options">
+        <form id="pick-card-form">
+            <h3>Select a card to buy</h3>
+            <div>
+                <button type="submit">Confirm</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script type="module" src="javascripts/src/interface.js"></script>

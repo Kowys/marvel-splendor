@@ -2,8 +2,8 @@ export class Board {
     levelOneCards = { pos1: null, pos2: null, pos3: null, pos4: null };
     levelTwoCards = { pos1: null, pos2: null, pos3: null, pos4: null };
     levelThreeCards = { pos1: null, pos2: null, pos3: null, pos4: null };
-    locationCards;
-    currency;
+    locationCards = { pos1: null, pos2: null, pos3: null, pos4: null };
+    currency = { blue: null, red: null, yellow: null, purple: null, orange: null, shield: null };
     placeCard(level, position, card) {
         if (level === 1) {
             this.placeLevelOneCard(position, card);
@@ -111,5 +111,23 @@ export class Board {
         }
     }
     updateCurrency(colour, amount) {
+        if (colour === "blue") {
+            this.currency.blue = amount;
+        }
+        else if (colour === "red") {
+            this.currency.red = amount;
+        }
+        else if (colour === "yellow") {
+            this.currency.yellow = amount;
+        }
+        else if (colour === "purple") {
+            this.currency.purple = amount;
+        }
+        else if (colour === "orange") {
+            this.currency.orange = amount;
+        }
+        else if (colour === "shield") {
+            this.currency.shield = amount;
+        }
     }
 }

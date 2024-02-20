@@ -11,8 +11,33 @@ body {
     color: #000000;
 }
 
+button {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
 button:hover, button:active {
     background-color: rgb(255, 255, 255);
+}
+
+#player-display {
+  display: none
+}
+
+#pick-3-options {
+  display: none
+}
+
+#pick-2-options {
+  display: none
+}
+
+#reserve-options {
+  display: none
+}
+
+#pick-card-options {
+  display: none
 }
 
 .gems {
@@ -79,3 +104,10 @@ button:hover, button:active {
   right: 0;
   margin: auto;
 }
+
+/* .card-container img:hover {
+  filter: brightness(1.2)
+  filter: drop-shadow(0 0 0.75rem crimson)
+  border:2px solid red;
+  box-shadow: 0 0 10px;
+} */

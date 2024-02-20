@@ -4,9 +4,9 @@ export class Board {
     public levelOneCards: LevelOneCards = {pos1: null, pos2: null, pos3: null, pos4: null}
     public levelTwoCards: LevelTwoCards = {pos1: null, pos2: null, pos3: null, pos4: null}
     public levelThreeCards: LevelThreeCards = {pos1: null, pos2: null, pos3: null, pos4: null}
-    public locationCards: LocationCards
+    public locationCards: LocationCards = {pos1: null, pos2: null, pos3: null, pos4: null}
 
-    public currency: Currency
+    public currency: Currency = {blue: null, red: null, yellow: null, purple: null, orange: null, shield: null}
 
     public placeCard(level: number, position: number, card: Card) {
         if (level === 1) {
@@ -123,7 +123,24 @@ export class Board {
     }
 
     public updateCurrency(colour: string, amount: number) {
-        
+        if (colour === "blue") {
+            this.currency.blue = amount;
+        } else
+        if (colour === "red") {
+            this.currency.red = amount;
+        } else
+        if (colour === "yellow") {
+            this.currency.yellow = amount;
+        } else
+        if (colour === "purple") {
+            this.currency.purple = amount;
+        } else
+        if (colour === "orange") {
+            this.currency.orange = amount;
+        } else
+        if (colour === "shield") {
+            this.currency.shield = amount;
+        }
     }
 }
 
@@ -161,4 +178,5 @@ type Currency = {
     yellow: number
     purple: number
     orange: number
+    shield: number
 }
