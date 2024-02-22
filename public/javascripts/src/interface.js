@@ -1,18 +1,11 @@
-import { Deck } from './deck.js';
-import { Board } from './board.js';
 import { Engine } from './engine.js';
 const btnCounter = document.querySelector("#btncounter");
-const dealButton = document.querySelector("#deal");
 const startButton = document.querySelector("#start-game");
-const pick3Button = document.querySelector("#pick-3");
-const pick2Button = document.querySelector("#pick-2");
-const reserveButton = document.querySelector("#reserve");
-const pickCardButton = document.querySelector("#pick-card");
+const pick3Button = document.querySelector("#pick-3-button");
+const pick2Button = document.querySelector("#pick-2-button");
+const reserveButton = document.querySelector("#reserve-button");
+const pickCardButton = document.querySelector("#pick-card-button");
 var counter = 0;
-var pick3Select = false;
-var pick2Select = false;
-var reserveSelect = false;
-var pickCardSelect = false;
 const engine = new Engine();
 updateDisplay(counter);
 function updateDisplay(c) {
@@ -24,58 +17,14 @@ btnCounter.addEventListener('click', () => {
     console.log(counter);
     updateDisplay(counter);
 });
-function dealCards() {
-    const deck = new Deck();
-    deck.resetDeck();
-    const board = new Board();
-    const levelMap = new Map();
-    levelMap.set("1", () => deck.takeLevelOneCard())
-        .set("2", () => deck.takeLevelTwoCard())
-        .set("3", () => deck.takeLevelThreeCard());
-    const levels = ["1", "2", "3"];
-    levels.forEach(cardLevel => {
-        const positions = ['1', '2', '3', '4'];
-        positions.forEach(cardPosition => {
-            const card = levelMap.get(cardLevel)();
-            board.placeCard(+cardLevel, +cardPosition, card);
-            const boardCard = board.getCard(+cardLevel, +cardPosition);
-            const imgURL = `<img class="card" src="./images/cards/${boardCard.cardInfo.imageLink}" alt="Card"/>`;
-            document.querySelector(`#level${cardLevel}-${cardPosition}`).innerHTML = imgURL;
-        });
-    });
-}
-dealButton.addEventListener('click', () => {
-    dealCards();
-});
 startButton.addEventListener('click', () => {
     engine.startGame(1);
-    document.getElementById("player-display").style.display = "block";
 });
-function updateActionButtonsAndForms(buttonName) {
-    document.getElementById("pick-3").style.backgroundColor = null;
-    document.getElementById("pick-2").style.backgroundColor = null;
-    document.getElementById("reserve").style.backgroundColor = null;
-    document.getElementById("pick-card").style.backgroundColor = null;
-    document.getElementById("pick-3-options").style.display = null;
-    document.getElementById("pick-2-options").style.display = null;
-    document.getElementById("reserve-options").style.display = null;
-    document.getElementById("pick-card-options").style.display = null;
-    var reserveForm = document.getElementById("reserve-form");
-    reserveForm.replaceWith(reserveForm.cloneNode(true));
-    var pickCardForm = document.getElementById("pick-card-form");
-    pickCardForm.replaceWith(pickCardForm.cloneNode(true));
-    var cardContainerImgs = document.querySelectorAll('.card-container img');
-    cardContainerImgs.forEach(cardImg => {
-        cardImg.checked = false;
-        cardImg.style.filter = null;
-    });
-    document.getElementById(`${buttonName}`).style.backgroundColor = "red";
-}
 function submitAction(actionName, actionVal) {
     const player = engine.getCurrentPlayer();
     try {
         const outcome = player.takeAction(actionName, actionVal);
-        console.log(outcome);
+        engine.nextPlayerTurn();
     }
     catch (error) {
         alert(`${error.message}`);
@@ -122,7 +71,7 @@ function addReserveForm() {
         var reserveList = document.querySelectorAll('.card-container img');
         reserveList.forEach(reservedCard => {
             if (reservedCard.checked) {
-                reserveSelected.push(reservedCard);
+                reserveSelected.push(reservedCard.id);
             }
         });
         submitAction("reserve", reserveSelected);
@@ -135,27 +84,31 @@ function addPickCardForm() {
         event.preventDefault();
         var pickCardSelected = [];
         var pickCardList = document.querySelectorAll('.card-container img');
-        pickCardList.forEach(pickCard => {
-            if (pickCard.checked) {
-                pickCardSelected.push(pickCard);
+        pickCardList.forEach(pickedCard => {
+            if (pickedCard.checked) {
+                pickCardSelected.push(pickedCard.id);
             }
         });
         submitAction("pick-card", pickCardSelected);
     });
 }
 pick3Button.addEventListener('click', () => {
-    updateActionButtonsAndForms("pick-3");
+    engine.resetActionButtonsAndForms();
+    document.getElementById("pick-3-button").style.backgroundColor = "red";
     addPick3Form();
 });
 pick2Button.addEventListener('click', () => {
-    updateActionButtonsAndForms("pick-2");
+    engine.resetActionButtonsAndForms();
+    document.getElementById("pick-2-button").style.backgroundColor = "red";
     addPick2Form();
 });
 reserveButton.addEventListener('click', () => {
-    updateActionButtonsAndForms("reserve");
+    engine.resetActionButtonsAndForms();
+    document.getElementById("reserve-button").style.backgroundColor = "red";
     addReserveForm();
 });
 pickCardButton.addEventListener('click', () => {
-    updateActionButtonsAndForms("pick-card");
+    engine.resetActionButtonsAndForms();
+    document.getElementById("pick-card-button").style.backgroundColor = "red";
     addPickCardForm();
 });

@@ -105,6 +105,10 @@ button:hover, button:active {
   margin: auto;
 }
 
+.card {
+  display: none;
+}
+
 /* .card-container img:hover {
   filter: brightness(1.2)
   filter: drop-shadow(0 0 0.75rem crimson)

@@ -14,48 +14,16 @@ export class Board {
         else if (level === 3) {
             this.placeLevelThreeCard(position, card);
         }
+        this.updateCardDisplay(level, position, card);
     }
     placeLevelOneCard(position, card) {
-        if (position === 1) {
-            this.levelOneCards.pos1 = card;
-        }
-        else if (position == 2) {
-            this.levelOneCards.pos2 = card;
-        }
-        else if (position === 3) {
-            this.levelOneCards.pos3 = card;
-        }
-        else if (position === 4) {
-            this.levelOneCards.pos4 = card;
-        }
+        this.levelOneCards[`pos${position}`] = card;
     }
     placeLevelTwoCard(position, card) {
-        if (position === 1) {
-            this.levelTwoCards.pos1 = card;
-        }
-        else if (position == 2) {
-            this.levelTwoCards.pos2 = card;
-        }
-        else if (position === 3) {
-            this.levelTwoCards.pos3 = card;
-        }
-        else if (position === 4) {
-            this.levelTwoCards.pos4 = card;
-        }
+        this.levelTwoCards[`pos${position}`] = card;
     }
     placeLevelThreeCard(position, card) {
-        if (position === 1) {
-            this.levelThreeCards.pos1 = card;
-        }
-        else if (position == 2) {
-            this.levelThreeCards.pos2 = card;
-        }
-        else if (position === 3) {
-            this.levelThreeCards.pos3 = card;
-        }
-        else if (position === 4) {
-            this.levelThreeCards.pos4 = card;
-        }
+        this.levelThreeCards[`pos${position}`] = card;
     }
     getCard(level, position) {
         if (level === 1) {
@@ -69,65 +37,34 @@ export class Board {
         }
     }
     getLevelOneCard(position) {
-        if (position === 1) {
-            return this.levelOneCards.pos1;
-        }
-        else if (position == 2) {
-            return this.levelOneCards.pos2;
-        }
-        else if (position === 3) {
-            return this.levelOneCards.pos3;
-        }
-        else if (position === 4) {
-            return this.levelOneCards.pos4;
-        }
+        return this.levelOneCards[`pos${position}`];
     }
     getLevelTwoCard(position) {
-        if (position === 1) {
-            return this.levelTwoCards.pos1;
-        }
-        else if (position == 2) {
-            return this.levelTwoCards.pos2;
-        }
-        else if (position === 3) {
-            return this.levelTwoCards.pos3;
-        }
-        else if (position === 4) {
-            return this.levelTwoCards.pos4;
-        }
+        return this.levelTwoCards[`pos${position}`];
     }
     getLevelThreeCard(position) {
-        if (position === 1) {
-            return this.levelThreeCards.pos1;
-        }
-        else if (position == 2) {
-            return this.levelThreeCards.pos2;
-        }
-        else if (position === 3) {
-            return this.levelThreeCards.pos3;
-        }
-        else if (position === 4) {
-            return this.levelThreeCards.pos4;
-        }
+        return this.levelThreeCards[`pos${position}`];
     }
     updateCurrency(colour, amount) {
-        if (colour === "blue") {
-            this.currency.blue = amount;
+        this.currency[`${colour}`] = amount;
+    }
+    addCurrency(colour, amount) {
+        this.currency[`${colour}`] += amount;
+    }
+    takeCurrency(colour, amount) {
+        this.currency[`${colour}`] -= amount;
+    }
+    updateCardDisplay(level, position, card) {
+        const cardElement = document.querySelector(`#card-${level}-${position}`);
+        if (card === null) {
+            cardElement.style.display = "none";
+            cardElement.checked = false;
         }
-        else if (colour === "red") {
-            this.currency.red = amount;
-        }
-        else if (colour === "yellow") {
-            this.currency.yellow = amount;
-        }
-        else if (colour === "purple") {
-            this.currency.purple = amount;
-        }
-        else if (colour === "orange") {
-            this.currency.orange = amount;
-        }
-        else if (colour === "shield") {
-            this.currency.shield = amount;
+        else {
+            cardElement.style.display = "block";
+            cardElement.src = `./images/cards/${card.cardInfo.imageLink}`;
+            cardElement.checked = false;
+            cardElement.style.filter = null;
         }
     }
 }

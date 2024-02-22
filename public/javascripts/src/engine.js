@@ -8,34 +8,62 @@ export class Engine {
     numberOfPlayers;
     turn;
     playerTurn;
+    gameEnded;
+    hoverBrightness = "brightness(1.1)";
     startGame(numPlayers) {
         this.numberOfPlayers = numPlayers;
         this.players = [];
         this.turn = 1;
         this.playerTurn = 1;
-        this.initPlayers();
+        this.gameEnded = false;
         this.deck = new Deck();
         this.board = new Board();
+        this.resetActionButtonsAndForms();
+        this.initPlayers();
         this.deck.resetDeck();
         this.dealCards();
         this.initCurrency();
         this.updateDisplay();
     }
     initPlayers() {
+        document.getElementById("player-display").style.display = "block";
         for (var i = 1; i <= this.numberOfPlayers; i++) {
-            const player = new Player(i);
+            const player = new Player(i, this);
             this.players.push(player);
         }
     }
     getCurrentPlayer() {
         return this.players[this.playerTurn - 1];
     }
+    resetActionButtonsAndForms() {
+        document.getElementById("pick-3-button").style.backgroundColor = null;
+        document.getElementById("pick-2-button").style.backgroundColor = null;
+        document.getElementById("reserve-button").style.backgroundColor = null;
+        document.getElementById("pick-card-button").style.backgroundColor = null;
+        document.getElementById("pick-3-options").style.display = null;
+        document.getElementById("pick-2-options").style.display = null;
+        document.getElementById("reserve-options").style.display = null;
+        document.getElementById("pick-card-options").style.display = null;
+        var pick3Form = document.getElementById("pick3-form");
+        pick3Form.replaceWith(pick3Form.cloneNode(true));
+        var pick2Form = document.getElementById("pick2-form");
+        pick2Form.replaceWith(pick2Form.cloneNode(true));
+        var reserveForm = document.getElementById("reserve-form");
+        reserveForm.replaceWith(reserveForm.cloneNode(true));
+        var pickCardForm = document.getElementById("pick-card-form");
+        pickCardForm.replaceWith(pickCardForm.cloneNode(true));
+        var cardContainerImgs = document.querySelectorAll('.card-container img');
+        cardContainerImgs.forEach(cardImg => {
+            cardImg.checked = false;
+            cardImg.style.filter = null;
+        });
+    }
     mouseEnterStyle(cardImg, color) {
         if (cardImg.checked) {
-            cardImg.style.filter = `brightness(1.2) drop-shadow(0 0 0.75rem ${color})`;
+            cardImg.style.filter = `${this.hoverBrightness} drop-shadow(0 0 0.75rem ${color})`;
         }
         else {
-            cardImg.style.filter = "brightness(1.2)";
+            cardImg.style.filter = `${this.hoverBrightness}`;
         }
     }
     mouseLeaveStyle(cardImg, color) {
@@ -56,27 +84,20 @@ export class Engine {
                 }
             });
             cardImg.checked = true;
-            cardImg.style.cssText = `filter:brightness(1.2) drop-shadow(0 0 0.75rem ${color})`;
+            cardImg.style.filter = `${this.hoverBrightness} drop-shadow(0 0 0.75rem ${color})`;
         }
         else {
             cardImg.checked = false;
-            cardImg.style.cssText = "filter:brightness(1.2)";
+            cardImg.style.filter = `${this.hoverBrightness}`;
         }
     }
     dealCards() {
-        const levelMap = new Map();
-        levelMap.set("1", () => this.deck.takeLevelOneCard())
-            .set("2", () => this.deck.takeLevelTwoCard())
-            .set("3", () => this.deck.takeLevelThreeCard());
         const levels = ["1", "2", "3"];
         levels.forEach(cardLevel => {
-            const positions = ['1', '2', '3', '4'];
+            const positions = ["1", "2", "3", "4"];
             positions.forEach(cardPosition => {
-                const card = levelMap.get(cardLevel)();
+                const card = this.deck.takeCard(+cardLevel);
                 this.board.placeCard(+cardLevel, +cardPosition, card);
-                const boardCard = this.board.getCard(+cardLevel, +cardPosition);
-                const imgURL = `<img class="card" id=card-${cardLevel}-${cardPosition} src="./images/cards/${boardCard.cardInfo.imageLink}" alt="Card"/>`;
-                document.querySelector(`#level${cardLevel}-${cardPosition}`).innerHTML = imgURL;
                 // Event listeners
                 var cardImg = document.querySelector(`#level${cardLevel}-${cardPosition} img`);
                 // Mouseover card
@@ -134,7 +155,39 @@ export class Engine {
         document.querySelector("#orange-gems").innerHTML = `Orange gems: ${this.board.currency.orange}`;
         document.querySelector("#shield-tokens").innerHTML = `Shield tokens: ${this.board.currency.shield}`;
     }
+    hasOneOfEachCard(player) {
+        var colors = ["blue", "red", "yellow", "purple", "orange"];
+        var hasCards = true;
+        colors.forEach(color => {
+            if (player.cards[`${color}`].length === 0) {
+                hasCards = false;
+            }
+        });
+        return hasCards;
+    }
+    checkWinConditions() {
+        var winner = null;
+        this.players.forEach(player => {
+            if (this.hasOneOfEachCard(player) && player.score.points >= 16 && player.score.greenGems >= 1) {
+                winner = player;
+            }
+        });
+        return winner;
+    }
+    declareWinner(player) {
+        document.querySelector("#game-winner").innerHTML = `Player ${player.playerId} has won the game!`;
+        this.gameEnded = true;
+    }
     nextPlayerTurn() {
+        if (this.playerTurn % this.numberOfPlayers === 0) {
+            const winner = this.checkWinConditions();
+            if (winner !== null) {
+                this.declareWinner(winner);
+                return;
+            }
+            this.turn += 1;
+        }
         this.playerTurn = (this.playerTurn % this.numberOfPlayers) + 1;
+        this.updateDisplay();
     }
 }
