@@ -29,8 +29,8 @@ async function incrementPermCount(i) {
 }
 async function updateDisplay(c) {
     document.querySelector("#counter-value").innerHTML = `Count: ${c}`;
-    var permCounter = await getPermCount();
-    document.querySelector("#permanent-counter-value").innerHTML = `Perm count: ${permCounter}`;
+    // var permCounter = await getPermCount();
+    // document.querySelector("#permanent-counter-value")!.innerHTML = `Perm count: ${permCounter}`;
 }
 ;
 async function incrementAndUpdateDisplay(i) {
@@ -43,7 +43,7 @@ btnCounter.addEventListener('click', () => {
     updateDisplay(counter);
 });
 permCounter.addEventListener('click', () => {
-    incrementAndUpdateDisplay(2);
+    // incrementAndUpdateDisplay(2);
 });
 startButton.addEventListener('click', () => {
     engine.startGame(1);
