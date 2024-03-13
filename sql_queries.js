@@ -2,9 +2,12 @@
 // All SQL commands are to be kept on server itself
 // If possible, logic should be executed on server, not browser
 var sql = require('sqlite3');
+const path = require("path");
 
 function openDB() {
-    return new sql.Database('./db/test.db', (err) => {
+    const dbPath = path.resolve(__dirname, "db/test.db");
+    console.log(dbPath)
+    return new sql.Database(dbPath, (err) => {
         if (err) {
             console.error(err.message);
         }
