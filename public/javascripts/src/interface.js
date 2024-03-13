@@ -1,5 +1,6 @@
 import { Engine } from './engine.js';
 const btnCounter = document.querySelector("#btncounter");
+const permCounter = document.querySelector("#permcounter");
 const startButton = document.querySelector("#start-game");
 const pick3Button = document.querySelector("#pick-3-button");
 const pick2Button = document.querySelector("#pick-2-button");
@@ -8,14 +9,41 @@ const pickCardButton = document.querySelector("#pick-card-button");
 var counter = 0;
 const engine = new Engine();
 updateDisplay(counter);
-function updateDisplay(c) {
-    document.querySelector("#result").innerHTML = `Count: ${c}`;
+async function getPermCount() {
+    const response = await fetch('/game/get-counter', {
+        method: 'get'
+    });
+    const data = await response.json();
+    return data.count;
+}
+async function incrementPermCount(i) {
+    await fetch('/game/increment-counter', {
+        method: 'post',
+        body: JSON.stringify({
+            increment: i,
+        }),
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+        },
+    });
+}
+async function updateDisplay(c) {
+    document.querySelector("#counter-value").innerHTML = `Count: ${c}`;
+    var permCounter = await getPermCount();
+    document.querySelector("#permanent-counter-value").innerHTML = `Perm count: ${permCounter}`;
 }
 ;
+async function incrementAndUpdateDisplay(i) {
+    await incrementPermCount(i);
+    await updateDisplay(counter);
+}
 btnCounter.addEventListener('click', () => {
     counter += 3;
     console.log(counter);
     updateDisplay(counter);
+});
+permCounter.addEventListener('click', () => {
+    incrementAndUpdateDisplay(2);
 });
 startButton.addEventListener('click', () => {
     engine.startGame(1);
