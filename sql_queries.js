@@ -1,7 +1,7 @@
 // SQL stuff needs to live on the server, not the browser
 // All SQL commands are to be kept on server itself
 // If possible, logic should be executed on server, not browser
-// var sql = require('sqlite3');
+var sql = require('sqlite3');
 
 function openDB() {
     return new sql.Database('./db/test.db', (err) => {
