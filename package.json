@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node server.js",
+    "start": "npm install && node server.js",
     "watch:build": "tsc -w",
     "watch:server": "nodemon --ext * --env-file=.reload.env server.js",
     "dev": "npm-run-all --parallel watch:build watch:server"
