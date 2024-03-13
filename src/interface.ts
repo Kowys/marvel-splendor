@@ -39,8 +39,8 @@ async function incrementPermCount(i: number) {
 async function updateDisplay(c) {
     document.querySelector("#counter-value")!.innerHTML = `Count: ${c}`;
 
-    // var permCounter = await getPermCount();
-    // document.querySelector("#permanent-counter-value")!.innerHTML = `Perm count: ${permCounter}`;
+    var permCounter = await getPermCount();
+    document.querySelector("#permanent-counter-value")!.innerHTML = `Perm count: ${permCounter}`;
 };
 
 
@@ -56,7 +56,7 @@ btnCounter!.addEventListener('click', () => {
 });
 
 permCounter!.addEventListener('click', () => {
-    // incrementAndUpdateDisplay(2);
+    incrementAndUpdateDisplay(2);
 });
 
 startButton!.addEventListener('click', () => {
