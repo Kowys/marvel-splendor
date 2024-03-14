@@ -5,9 +5,11 @@ var mysql = require('mysql2');
 
 function createConn() {
     return mysql.createConnection({
-        host: "localhost",
-        user: "root",
-        password: "kyssyk14"
+        host: process.env.RDS_HOSTNAME,
+        user: process.env.RDS_USERNAME,
+        password: process.env.RDS_PASSWORD,
+        port: process.env.RDS_PORT,
+        database: process.env.RDS_DB_NAME
     });
 }
 
@@ -16,13 +18,14 @@ function assertDBAndTables(conn) {
         if (err) throw err;
         console.log("Connected!");
 
-        const assertDBQuery = 'CREATE DATABASE IF NOT EXISTS kowys_test'
-        conn.query(assertDBQuery, function (error, results, fields) {
-            if (error) throw error;
-            console.log("Database created");
-        });
+        // const assertDBQuery = 'CREATE DATABASE IF NOT EXISTS kowys_test'
+        // conn.query(assertDBQuery, function (error, results, fields) {
+        //     if (error) throw error;
+        //     console.log("Database created");
+        // });
 
-        conn.changeUser({database: "kowys_test"});
+        // conn.changeUser({database: "kowys_test"});
+        
         var assertTableQuery = "CREATE TABLE IF NOT EXISTS counter (id INTEGER(255) PRIMARY KEY, count INTEGER(255));";
         conn.query(assertTableQuery, function (err, result) {
             if (err) throw err;
