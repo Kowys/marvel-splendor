@@ -12,12 +12,19 @@ const pickCardButton = document.querySelector("#pick-card-button");
 
 var counter = 0;
 
+displayUniqueId();
+
 const engine = new Engine();
 
 updateDisplay(counter);
 
+function displayUniqueId() {
+    const currentUrl = window.location.pathname;
+    document.querySelector("#unique-id")!.innerHTML = `Unique Id: ${currentUrl}`;
+}
+
 async function getPermCount() {
-    const response = await fetch('/game/get-counter', {
+    const response = await fetch('/get-counter', {
         method: 'get'
     })
     const data = await response.json();
@@ -25,7 +32,7 @@ async function getPermCount() {
 }
 
 async function incrementPermCount(i: number) {
-    await fetch('/game/increment-counter', {
+    await fetch('/increment-counter', {
         method: 'post',
         body: JSON.stringify({
             increment: i,
