@@ -10,18 +10,24 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Marvel Splendor', layout: "index_layout"});
 });
 
-/* Generate unique ID. */
-router.get('/generate-id', function(request, response, next) {
-	var uniqueId = uuid.v4()
-	console.log('Unique ID:', uniqueId);
-	var params = {};
-	params.uniqueId = uniqueId;
-	response.send(params);
-});
-
 /* Create new game state in DB */
 router.get('/new-game-state', function(request, response, next) {
+	// Generate unique game ID
+	var numPlayers = 2;
+	var uniqueUrls = [];
+	for (i = 1; i <= numPlayers; i++) {
+		var uniqueUrl = uuid.v4();
+		console.log('Unique URL:', uniqueUrl);
+		uniqueUrls.push(uniqueUrl);
+	};
 
+	// Create new game state in DB
+	sql.newGameTable(conn, uniqueUrls, numPlayers);
+
+	// Return unique ID to create game URL
+	var params = {};
+	params.uniqueUrls = uniqueUrls;
+	response.send(params);
 });
 
 /* Retrieve current game state from DB */

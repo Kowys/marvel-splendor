@@ -4,12 +4,6 @@ var sql = require('../mysql_queries');
 var router = express.Router();
 var conn = sql.createConn();
 
-/* Render game interface. */
-// router.get('/', function(request, response, next) {
-// 	sql.assertDBAndTables(conn);
-// 	response.render('interface', { title: 'Marvel Splendor', layout: "interface_layout"});
-// });
-
 /* Render game interface for given instance. */
 router.get('/:id', function(request, response, next) {
 	var uniqueId = request.params.id;
