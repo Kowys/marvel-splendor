@@ -18,7 +18,7 @@ router.get('/new-game-state', function(request, response, next) {
 	for (i = 1; i <= numPlayers; i++) {
 		var uniqueUrl = uuid.v4();
 		console.log('Unique URL:', uniqueUrl);
-		uniqueUrls.push(uniqueUrl);
+		uniqueUrls.push([uniqueUrl, i]);
 	};
 
 	// Create new game state in DB
@@ -31,8 +31,17 @@ router.get('/new-game-state', function(request, response, next) {
 });
 
 /* Retrieve current game state from DB */
-router.post('/get-game-state', function(request, response, next) {
+router.get('/get-game-state', async function(request, response, next) {
+	var data = await sql.retrieveGameTable(conn, request.query.url_id);
+	console.log(`Num players: ${data.num_players}`)
+	response.send(data);
+});
 
+/* Update DB with current game state */
+router.post('/action-update', function(request, response, next) {
+	sql.insertNewAction(conn, request.body);
+	console.log(`DB updated`);
+	response.send("Success");
 });
 
 /* GET count from DB. */
@@ -45,8 +54,8 @@ router.get('/get-counter', async function(request, response, next) {
 });
 
 /* POST to DB. */
-router.post('/increment-counter', function(request, response, next) {
-	sql.incrementPermCounter(conn, request.body.increment)
+router.get('/increment-counter', function(request, response, next) {
+	sql.incrementPermCounter(conn, request.query.inc)
 	response.json({success: true});
 });
 

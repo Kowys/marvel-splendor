@@ -1,14 +1,12 @@
 import { Engine } from './engine.js';
 const btnCounter = document.querySelector("#btncounter");
 const permCounter = document.querySelector("#permcounter");
-const startButton = document.querySelector("#start-game");
 const pick3Button = document.querySelector("#pick-3-button");
 const pick2Button = document.querySelector("#pick-2-button");
 const reserveButton = document.querySelector("#reserve-button");
 const pickCardButton = document.querySelector("#pick-card-button");
 var counter = 0;
 displayUniqueId();
-const engine = new Engine();
 updateDisplay(counter);
 function displayUniqueId() {
     const currentUrl = window.location.pathname;
@@ -21,12 +19,23 @@ async function getPermCount() {
     const data = await response.json();
     return data.count;
 }
-async function incrementPermCount(i) {
+async function incrementPermCountPost(i) {
     await fetch('/increment-counter', {
         method: 'post',
         body: JSON.stringify({
             increment: i,
         }),
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+        },
+    });
+}
+async function incrementPermCountGet(i) {
+    var params = new URLSearchParams({
+        inc: i.toString(),
+    });
+    await fetch('/increment-counter?' + params, {
+        method: 'get',
         headers: {
             'Content-type': 'application/json; charset=UTF-8',
         },
@@ -39,7 +48,7 @@ async function updateDisplay(c) {
 }
 ;
 async function incrementAndUpdateDisplay(i) {
-    await incrementPermCount(i);
+    await incrementPermCountGet(i);
     await updateDisplay(counter);
 }
 btnCounter.addEventListener('click', () => {
@@ -50,14 +59,13 @@ btnCounter.addEventListener('click', () => {
 permCounter.addEventListener('click', () => {
     incrementAndUpdateDisplay(2);
 });
-startButton.addEventListener('click', () => {
-    engine.startGame(1);
-});
+const engine = new Engine();
+const currentUrl = window.location.pathname;
+engine.setupGame(currentUrl);
 function submitAction(actionName, actionVal) {
-    const player = engine.getCurrentPlayer();
     try {
-        const outcome = player.takeAction(actionName, actionVal);
-        engine.nextPlayerTurn();
+        const player = engine.getPlayer();
+        player.takeAction(actionName, actionVal);
     }
     catch (error) {
         alert(`${error.message}`);

@@ -5,35 +5,54 @@ export class Engine {
     deck;
     board;
     players;
+    tableName;
+    thisPlayerId;
     numberOfPlayers;
-    turn;
+    round;
     playerTurn;
-    gameEnded;
+    gameState;
     hoverBrightness = "brightness(1.1)";
-    startGame(numPlayers) {
-        this.numberOfPlayers = numPlayers;
+    async setupGame(currentUrl) {
+        const data = await this.getGameStateFromDB(currentUrl);
+        console.log(`Player count: ${data.num_players}`);
+        console.log(`Player id: ${data.player_id}`);
+        this.tableName = data.table_name;
+        this.thisPlayerId = data.player_id;
+        this.numberOfPlayers = data.num_players;
         this.players = [];
-        this.turn = 1;
-        this.playerTurn = 1;
-        this.gameEnded = false;
+        this.round = data.round;
+        this.playerTurn = data.player_turn;
+        this.gameState = data.game_state;
         this.deck = new Deck();
+        this.deck.resetDeck();
         this.board = new Board();
         this.resetActionButtonsAndForms();
-        this.initPlayers();
-        this.deck.resetDeck();
-        this.dealCards();
-        this.initCurrency();
+        this.initPlayers(data);
+        this.initCards(data);
+        this.initCurrency(data);
         this.updateDisplay();
     }
-    initPlayers() {
+    async getGameStateFromDB(currentUrl) {
+        var urlId = currentUrl.split('/').pop();
+        var params = new URLSearchParams({
+            url_id: urlId,
+        });
+        const response = await fetch('/get-game-state?' + params, {
+            method: 'get'
+        });
+        const data = await response.json();
+        return data;
+    }
+    initPlayers(data) {
         document.getElementById("player-display").style.display = "block";
         for (var i = 1; i <= this.numberOfPlayers; i++) {
             const player = new Player(i, this);
+            player.initState(data);
             this.players.push(player);
         }
     }
-    getCurrentPlayer() {
-        return this.players[this.playerTurn - 1];
+    getPlayer() {
+        return this.players[this.thisPlayerId - 1];
     }
     resetActionButtonsAndForms() {
         document.getElementById("pick-3-button").style.backgroundColor = null;
@@ -91,12 +110,13 @@ export class Engine {
             cardImg.style.filter = `${this.hoverBrightness}`;
         }
     }
-    dealCards() {
+    initCards(data) {
         const levels = ["1", "2", "3"];
         levels.forEach(cardLevel => {
             const positions = ["1", "2", "3", "4"];
             positions.forEach(cardPosition => {
-                const card = this.deck.takeCard(+cardLevel);
+                var cardName = data[`card_level_${cardLevel}_${cardPosition}`];
+                const card = this.deck.takeNamedCard(cardName);
                 this.board.placeCard(+cardLevel, +cardPosition, card);
                 // Event listeners
                 var cardImg = document.querySelector(`#level${cardLevel}-${cardPosition} img`);
@@ -131,22 +151,17 @@ export class Engine {
             });
         });
     }
-    initCurrency() {
-        const numPlayersToCurrencyMap = new Map();
-        numPlayersToCurrencyMap.set(1, 4)
-            .set(2, 4)
-            .set(3, 5)
-            .set(4, 7);
-        this.board.updateCurrency("blue", numPlayersToCurrencyMap.get(this.numberOfPlayers));
-        this.board.updateCurrency("red", numPlayersToCurrencyMap.get(this.numberOfPlayers));
-        this.board.updateCurrency("yellow", numPlayersToCurrencyMap.get(this.numberOfPlayers));
-        this.board.updateCurrency("purple", numPlayersToCurrencyMap.get(this.numberOfPlayers));
-        this.board.updateCurrency("orange", numPlayersToCurrencyMap.get(this.numberOfPlayers));
-        this.board.updateCurrency("shield", 5);
+    initCurrency(data) {
+        this.board.updateCurrency("blue", data.board_currency_blue);
+        this.board.updateCurrency("red", data.board_currency_red);
+        this.board.updateCurrency("yellow", data.board_currency_yellow);
+        this.board.updateCurrency("purple", data.board_currency_purple);
+        this.board.updateCurrency("orange", data.board_currency_orange);
+        this.board.updateCurrency("shield", data.board_currency_shield);
     }
     updateDisplay() {
         document.querySelector("#player-count").innerHTML = `Number of players: ${this.numberOfPlayers}`;
-        document.querySelector("#turn-number").innerHTML = `Turn: ${this.turn}`;
+        document.querySelector("#round-number").innerHTML = `Round: ${this.round}`;
         document.querySelector("#player-turn").innerHTML = `Player ${this.playerTurn}'s turn`;
         document.querySelector("#blue-gems").innerHTML = `Blue gems: ${this.board.currency.blue}`;
         document.querySelector("#red-gems").innerHTML = `Red gems: ${this.board.currency.red}`;
@@ -176,7 +191,7 @@ export class Engine {
     }
     declareWinner(player) {
         document.querySelector("#game-winner").innerHTML = `Player ${player.playerId} has won the game!`;
-        this.gameEnded = true;
+        this.gameState = "ended";
     }
     nextPlayerTurn() {
         if (this.playerTurn % this.numberOfPlayers === 0) {
@@ -185,7 +200,7 @@ export class Engine {
                 this.declareWinner(winner);
                 return;
             }
-            this.turn += 1;
+            this.round += 1;
         }
         this.playerTurn = (this.playerTurn % this.numberOfPlayers) + 1;
         this.updateDisplay();

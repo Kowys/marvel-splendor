@@ -35,11 +35,41 @@ function assertDBAndTables(conn) {
 
         var assertUrlTableQuery = "CREATE TABLE IF NOT EXISTS gameurls ( \
             table_id INT(10) ZEROFILL, \
-            url_id VARCHAR(255) PRIMARY KEY \
+            url_id VARCHAR(255) PRIMARY KEY, \
+            player_id INT(10) \
         );";
         conn.query(assertUrlTableQuery, function (err, result) {
             if (err) throw err;
             console.log("Table created");
+        });
+    });
+}
+
+async function retrieveGameTable(conn, url_id) {
+    return new Promise((resolve, reject) => {
+        conn.connect(function(err) {
+            if (err) throw err;
+            console.log("Connected!");
+
+            var getGameTableQuery = "SELECT CONCAT('game', table_id) AS table_name, player_id FROM gameurls WHERE url_id = ?;";
+            console.log(`URL id: ${url_id}`);
+            conn.query(getGameTableQuery, url_id, function (err, result) {
+                if (err) throw err;
+
+                var table_name = result[0].table_name;
+                var player_id = result[0].player_id;
+                console.log(`table_name: ${table_name}`);
+
+                var getGameDataQuery = "Select * FROM ?? WHERE round = (SELECT MAX(round) FROM ??) AND turn = (SELECT MAX(turn) FROM ?? WHERE round = (SELECT MAX(round) FROM ??))"
+                conn.query(getGameDataQuery, [table_name, table_name, table_name, table_name], function (err, result) {
+                    if (err) throw err;
+                    console.log("Retrieved records from game table");
+                    var gameData = result[0];
+                    gameData.player_id = player_id;
+                    gameData.table_name = table_name;
+                    return resolve(gameData);
+                });
+            });
         });
     });
 }
@@ -61,8 +91,8 @@ async function insertGameUrl(conn, uniqueUrls, numPlayers) {
                 if (err) throw err;
 
                 var nextGameId = result[0].highest_id + 1;
-                var urlsAndGameIds = uniqueUrls.map((url) => [url, nextGameId]);
-                var insertUrlQuery = "INSERT INTO gameurls (url_id, table_id) VALUES ?;";
+                var urlsAndGameIds = uniqueUrls.map((urlAndPlayerId) => [urlAndPlayerId[0], nextGameId, urlAndPlayerId[1]]);
+                var insertUrlQuery = "INSERT INTO gameurls (url_id, table_id, player_id) VALUES ?;";
                 conn.query(insertUrlQuery, [urlsAndGameIds], function (err, result) {
                     if (err) throw err;
                     console.log("Game URLs inserted");
@@ -126,7 +156,8 @@ function initGameTable(conn, table_name, numPlayers) {
         player_1_currency_blue, player_1_currency_red, player_1_currency_yellow, player_1_currency_purple, player_1_currency_orange, player_1_currency_shield, \
         player_2_currency_blue, player_2_currency_red, player_2_currency_yellow, player_2_currency_purple, player_2_currency_orange, player_2_currency_shield, \
         player_3_currency_blue, player_3_currency_red, player_3_currency_yellow, player_3_currency_purple, player_3_currency_orange, player_3_currency_shield, \
-        player_4_currency_blue, player_4_currency_red, player_4_currency_yellow, player_4_currency_purple, player_4_currency_orange, player_4_currency_shield \
+        player_4_currency_blue, player_4_currency_red, player_4_currency_yellow, player_4_currency_purple, player_4_currency_orange, player_4_currency_shield, \
+        player_1_cards, player_1_cards_reserved, player_2_cards, player_2_cards_reserved, player_3_cards, player_3_cards_reserved, player_4_cards, player_4_cards_reserved \
     ) VALUES ( \
         'active', ?, 1, 1, 1, \
         ?, ?, ?, ?, ?, ?, \
@@ -136,7 +167,8 @@ function initGameTable(conn, table_name, numPlayers) {
         0, 0, 0, 0, 0, 0, \
         0, 0, 0, 0, 0, 0, \
         0, 0, 0, 0, 0, 0, \
-        0, 0, 0, 0, 0, 0 \
+        0, 0, 0, 0, 0, 0, \
+        '', '', '', '', '', '', '', '' \
     )";
 
     var customValues = [table_name, numPlayers];
@@ -192,6 +224,102 @@ function getInitialCards() {
     return levelOneCardsInitial.concat(levelTwoCardsInitial, levelThreeCardsInitial);
 }
 
+function insertNewAction(conn, data) {
+    var insertNewActionQuery = "INSERT INTO ?? ( \
+        game_state, num_players, round, turn, player_turn, \
+        board_currency_blue, board_currency_red, board_currency_yellow, board_currency_purple, board_currency_orange, board_currency_shield, \
+        card_level_1_1, card_level_1_2, card_level_1_3, card_level_1_4, \
+        card_level_2_1, card_level_2_2, card_level_2_3, card_level_2_4, \
+        card_level_3_1, card_level_3_2, card_level_3_3, card_level_3_4, \
+        player_1_currency_blue, player_1_currency_red, player_1_currency_yellow, player_1_currency_purple, player_1_currency_orange, player_1_currency_shield, \
+        player_2_currency_blue, player_2_currency_red, player_2_currency_yellow, player_2_currency_purple, player_2_currency_orange, player_2_currency_shield, \
+        player_3_currency_blue, player_3_currency_red, player_3_currency_yellow, player_3_currency_purple, player_3_currency_orange, player_3_currency_shield, \
+        player_4_currency_blue, player_4_currency_red, player_4_currency_yellow, player_4_currency_purple, player_4_currency_orange, player_4_currency_shield, \
+        player_1_cards, player_1_cards_reserved, player_2_cards, player_2_cards_reserved, player_3_cards, player_3_cards_reserved, player_4_cards, player_4_cards_reserved, \
+        previous_move_type, previous_move_info \
+    ) VALUES ( \
+        ?, ?, ?, ?, ?, \
+        ?, ?, ?, ?, ?, ?, \
+        ?, ?, ?, ?, \
+        ?, ?, ?, ?, \
+        ?, ?, ?, ?, \
+        ?, ?, ?, ?, ?, ?, \
+        ?, ?, ?, ?, ?, ?, \
+        ?, ?, ?, ?, ?, ?, \
+        ?, ?, ?, ?, ?, ?, \
+        ?, ?, ?, ?, ?, ?, ?, ?, \
+        ?, ? \
+    )";
+
+    var gameStateValues = [
+        data.table_name,
+        data.game_state, data.num_players, data.round, data.turn, data.player_turn,
+        data.board_currency_blue, data.board_currency_red, data.board_currency_yellow, data.board_currency_purple, data.board_currency_orange, data.board_currency_shield,
+        data.card_level_1_1, data.card_level_1_2, data.card_level_1_3, data.card_level_1_4,
+        data.card_level_2_1, data.card_level_2_2, data.card_level_2_3, data.card_level_2_4,
+        data.card_level_3_1, data.card_level_3_2, data.card_level_3_3, data.card_level_3_4
+    ];
+
+    // Player currencies
+    for (var i = 1; i <= 4; i++) {
+        var playerCurrencies = []
+        if (`player_${i}_currency_blue` in data) {
+            playerCurrencies.push(data[`player_${i}_currency_blue`]);
+        } else {
+            playerCurrencies.push(0);
+        }
+        if (`player_${i}_currency_red` in data) {
+            playerCurrencies.push(data[`player_${i}_currency_red`]);
+        } else {
+            playerCurrencies.push(0);
+        }
+        if (`player_${i}_currency_yellow` in data) {
+            playerCurrencies.push(data[`player_${i}_currency_yellow`]);
+        } else {
+            playerCurrencies.push(0);
+        }
+        if (`player_${i}_currency_purple` in data) {
+            playerCurrencies.push(data[`player_${i}_currency_purple`]);
+        } else {
+            playerCurrencies.push(0);
+        }
+        if (`player_${i}_currency_orange` in data) {
+            playerCurrencies.push(data[`player_${i}_currency_orange`]);
+        } else {
+            playerCurrencies.push(0);
+        }
+        if (`player_${i}_currency_shield` in data) {
+            playerCurrencies.push(data[`player_${i}_currency_shield`]);
+        } else {
+            playerCurrencies.push(0);
+        }
+
+        gameStateValues = gameStateValues.concat(playerCurrencies);
+    }
+
+    // Player cards
+    for (var i = 1; i <= 4; i++) {
+        var playerBoughtCards = "";
+        if (`player_${i}_cards` in data) {
+            playerBoughtCards = data[`player_${i}_cards`];
+        }
+        var playerReservedCards = "";
+        if (`player_${i}_cards_reserved` in data) {
+            playerReservedCards = data[`player_${i}_cards_reserved`];
+        }
+
+        gameStateValues = gameStateValues.concat([playerBoughtCards, playerReservedCards]);
+    }
+
+    // Previous move
+    gameStateValues = gameStateValues.concat([data.previous_move_type, data.previous_move_info]);
+
+    conn.query(insertNewActionQuery, gameStateValues,  function (err, result) {
+        if (err) throw err;
+        console.log("New game action inserted");
+    });
+}
+
 function getCurrentPermCounter(conn) {
     return new Promise((resolve, reject) => {
         const getPermCounterQuery = 'SELECT count FROM counter WHERE id = 1'
@@ -213,8 +341,9 @@ function incrementPermCounter(conn, i) {
 
 module.exports = {
     createConn,
-    assertDBAndTables,
     newGameTable,
+    retrieveGameTable,
+    insertNewAction,
     getCurrentPermCounter,
     incrementPermCounter,
 }

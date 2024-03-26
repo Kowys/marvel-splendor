@@ -16,6 +16,31 @@ export class Deck {
             return this.takeLevelThreeCard();
         }
     }
+    takeNamedCard(name) {
+        var targetCard = null;
+        this.levelOneCards.forEach(card => {
+            if (card.cardInfo.name === name) {
+                targetCard = card;
+                this.levelOneCards = this.levelOneCards.filter(c => c.cardInfo.name !== targetCard.cardInfo.name);
+                return;
+            }
+        });
+        this.levelTwoCards.forEach(card => {
+            if (card.cardInfo.name === name) {
+                targetCard = card;
+                this.levelTwoCards = this.levelTwoCards.filter(c => c.cardInfo.name !== targetCard.cardInfo.name);
+                return;
+            }
+        });
+        this.levelThreeCards.forEach(card => {
+            if (card.cardInfo.name === name) {
+                targetCard = card;
+                this.levelThreeCards = this.levelThreeCards.filter(c => c.cardInfo.name !== targetCard.cardInfo.name);
+                return;
+            }
+        });
+        return targetCard;
+    }
     takeLevelOneCard() {
         if (this.levelOneCards.length > 0) {
             return this.levelOneCards.pop();

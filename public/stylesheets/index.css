@@ -26,7 +26,7 @@ body {
   background-color: red;
 }
 
-#new-game-link {
+.new-game-link {
   background-color: #f44336;
   color: rgb(54, 9, 255);
   padding: 14px 50px;
@@ -37,7 +37,7 @@ body {
   margin-bottom: 10px;
 }
 
-#new-game-link:hover, #new-game-link:active {
+.new-game-link:hover, .new-game-link:active {
   background-color: red;
 }
 

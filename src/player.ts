@@ -16,6 +16,59 @@ export class Player {
         this.engine = engine;
     }
 
+    public initState(data: any) {
+        // Player currency
+        this.currency.blue = data[`player_${this.playerId}_currency_blue`]
+        this.currency.red = data[`player_${this.playerId}_currency_red`]
+        this.currency.yellow = data[`player_${this.playerId}_currency_yellow`]
+        this.currency.purple = data[`player_${this.playerId}_currency_purple`]
+        this.currency.orange = data[`player_${this.playerId}_currency_orange`]
+        this.currency.shield = data[`player_${this.playerId}_currency_shield`]
+
+        // Player bought cards
+        var cardNames = data[`player_${this.playerId}_cards`].split(',')
+        if (cardNames[0] !== '') {
+            cardNames.forEach(name => {
+                var card = this.engine.deck.takeNamedCard(name);
+                var cardColor = null;
+                if (card.incomes.blueIncome === 1) {
+                    cardColor = 'blue'
+                } else 
+                if (card.incomes.redIncome === 1) {
+                    cardColor = 'red'
+                } else
+                if (card.incomes.yellowIncome === 1) {
+                    cardColor = 'yellow'
+                } else
+                if (card.incomes.purpleIncome === 1) {
+                    cardColor = 'purple'
+                } else
+                if (card.incomes.orangeIncome === 1) {
+                    cardColor = 'orange'
+                }
+                this.score.points += card.points.points;
+                this.score.avengerPoints += card.points.avengerPoints;
+                if (card.cardInfo.level === 3) {
+                    this.score.greenGems += 1;
+                }
+                this.cards[`${cardColor}`].push(card);
+            });
+        }
+        
+        // Player reserved cards
+        var reservedCardNames = data[`player_${this.playerId}_cards_reserved`].split(',')
+        if (reservedCardNames[0] !== '') {
+            reservedCardNames.forEach(name => {
+                var card = this.engine.deck.takeNamedCard(name);
+                this.reserved.push(card);
+            });
+        };
+
+        if (this.playerId === data.player_id) {
+            this.updateDisplay()
+        }
+    }
+
     private takeGems(color: string, amount: number) {
         this.currency[`${color}`] += amount;
         this.engine.board.takeCurrency(color, amount);
@@ -73,6 +126,65 @@ export class Player {
         });
     }
 
+    private actionUpdateDB(actionType: string, actionString: string) {
+        var data = {
+            "table_name": this.engine.tableName,
+            "previous_move_type": actionType,
+            "previous_move_info": actionString,
+            "game_state": this.engine.gameState,
+            "num_players": this.engine.numberOfPlayers,
+            "round": this.engine.round,
+            "turn": this.engine.playerTurn,
+            "player_turn": this.engine.playerTurn,
+            "board_currency_blue": this.engine.board.currency.blue,
+            "board_currency_red": this.engine.board.currency.red,
+            "board_currency_yellow": this.engine.board.currency.yellow,
+            "board_currency_purple": this.engine.board.currency.purple,
+            "board_currency_orange": this.engine.board.currency.orange,
+            "board_currency_shield": this.engine.board.currency.shield,
+            "card_level_1_1": this.engine.board.levelOneCards.pos1.cardInfo.name,
+            "card_level_1_2": this.engine.board.levelOneCards.pos2.cardInfo.name,
+            "card_level_1_3": this.engine.board.levelOneCards.pos3.cardInfo.name,
+            "card_level_1_4": this.engine.board.levelOneCards.pos4.cardInfo.name,
+            "card_level_2_1": this.engine.board.levelTwoCards.pos1.cardInfo.name,
+            "card_level_2_2": this.engine.board.levelTwoCards.pos2.cardInfo.name,
+            "card_level_2_3": this.engine.board.levelTwoCards.pos3.cardInfo.name,
+            "card_level_2_4": this.engine.board.levelTwoCards.pos4.cardInfo.name,
+            "card_level_3_1": this.engine.board.levelThreeCards.pos1.cardInfo.name,
+            "card_level_3_2": this.engine.board.levelThreeCards.pos2.cardInfo.name,
+            "card_level_3_3": this.engine.board.levelThreeCards.pos3.cardInfo.name,
+            "card_level_3_4": this.engine.board.levelThreeCards.pos4.cardInfo.name,
+        };
+
+        for (var i = 1; i <= this.engine.numberOfPlayers; i++) {
+            var player = this.engine.players[i-1];
+            data[`player_${i}_currency_blue`] = player.currency.blue;
+            data[`player_${i}_currency_red`] = player.currency.red;
+            data[`player_${i}_currency_yellow`] = player.currency.yellow;
+            data[`player_${i}_currency_purple`] = player.currency.purple;
+            data[`player_${i}_currency_orange`] = player.currency.orange;
+            data[`player_${i}_currency_shield`] = player.currency.shield;
+
+            var reservedCardString = player.reserved.map(card => card.cardInfo.name).toString();
+            data[`player_${i}_cards_reserved`] = reservedCardString;
+
+            var boughtCards = [].concat(player.cards.blue, player.cards.red, player.cards.yellow, player.cards.purple, player.cards.orange);
+            var boughtCardString = boughtCards.map(card => card.cardInfo.name).toString();
+            data[`player_${i}_cards`] = boughtCardString;
+        }
+        this.sendActionUpdateDB(data);
+    }
+
+    private async sendActionUpdateDB(data: object) {
+        await fetch('/action-update', {
+            method: 'post',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8',
+            },
+        })
+    }
+
     public updateDisplay() {
         document.querySelector("#player-score").innerHTML = `Score: ${this.score.points}`;
         document.querySelector("#player-avenger-points").innerHTML = `Avenger points: ${this.score.avengerPoints}`;
@@ -93,8 +205,11 @@ export class Player {
     }
 
     public takeAction(actionType: string, actionVal: string[]) {
-        if (this.engine.gameEnded) {
+        if (this.engine.gameState === "Ended") {
             throw new Error("Game has ended.");
+        }
+        if (this.engine.playerTurn !== this.playerId) {
+            throw new Error("It is not your turn to move.");
         }
         if (actionType === "pick3") {
             return this.pick3Action(actionVal);
@@ -129,12 +244,21 @@ export class Player {
             }
         });
 
+        var actionString = "";
+
         actionVal.forEach(gem => {
             this.takeGems(gem, 1);
+            if (actionString === "") {
+                actionString = gem;
+            } else {
+                actionString = actionString.concat(",", gem);
+            }
         });
 
         this.engine.updateDisplay();
         this.updateDisplay();
+        this.engine.nextPlayerTurn();
+        this.actionUpdateDB("pick3", actionString);
         
         return "Success";
     }
@@ -152,12 +276,17 @@ export class Player {
             }
         });
 
+        var actionString = "";
+
         actionVal.forEach(gem => {
             this.takeGems(gem, 2);
+            actionString = gem;
         });
 
         this.engine.updateDisplay();
         this.updateDisplay();
+        this.engine.nextPlayerTurn();
+        this.actionUpdateDB("pick2", actionString);
         
         return "Success";
     }
@@ -190,9 +319,13 @@ export class Player {
             if (this.engine.board.currency["shield"] >= 1) {
                 this.takeGems("shield", 1);
             }
+
+            var actionString = card.cardInfo.name;
             
             this.engine.updateDisplay();
             this.updateDisplay();
+            this.engine.nextPlayerTurn();
+            this.actionUpdateDB("reserve", actionString);
         });
         
         return "Success";
@@ -225,10 +358,14 @@ export class Player {
                 this.engine.board.placeCard(+level, +position, newCard)
             } catch (error) {
                 this.engine.board.updateCardDisplay(+level, +position, null);
-            } 
+            }
+
+            var actionString = card.cardInfo.name;
             
             this.engine.updateDisplay();
             this.updateDisplay();
+            this.engine.nextPlayerTurn();
+            this.actionUpdateDB("buy", actionString);
         });
         
         return "Success";
