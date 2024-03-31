@@ -5,6 +5,14 @@ const pick3Button = document.querySelector("#pick-3-button");
 const pick2Button = document.querySelector("#pick-2-button");
 const reserveButton = document.querySelector("#reserve-button");
 const pickCardButton = document.querySelector("#pick-card-button");
+const engine = new Engine();
+engine.setupGame(window.location.pathname, true);
+const evtSource = new EventSource(`${window.location.origin}/events`);
+evtSource.onmessage = (event) => {
+    const parsedData = JSON.parse(event.data);
+    engine.setupGame(window.location.pathname, false);
+    console.log(`Server sent data: ${parsedData}`);
+};
 var counter = 0;
 displayUniqueId();
 updateDisplay(counter);
@@ -59,9 +67,8 @@ btnCounter.addEventListener('click', () => {
 permCounter.addEventListener('click', () => {
     incrementAndUpdateDisplay(2);
 });
-const engine = new Engine();
-const currentUrl = window.location.pathname;
-engine.setupGame(currentUrl);
+// const currentUrl = window.location.pathname;
+// engine.setupGame(currentUrl);
 function submitAction(actionName, actionVal) {
     try {
         const player = engine.getPlayer();

@@ -12,7 +12,7 @@ export class Engine {
     playerTurn;
     gameState;
     hoverBrightness = "brightness(1.1)";
-    async setupGame(currentUrl) {
+    async setupGame(currentUrl, firstInit) {
         const data = await this.getGameStateFromDB(currentUrl);
         console.log(`Player count: ${data.num_players}`);
         console.log(`Player id: ${data.player_id}`);
@@ -28,7 +28,7 @@ export class Engine {
         this.board = new Board();
         this.resetActionButtonsAndForms();
         this.initPlayers(data);
-        this.initCards(data);
+        this.initCards(data, firstInit);
         this.initCurrency(data);
         this.updateDisplay();
     }
@@ -110,7 +110,37 @@ export class Engine {
             cardImg.style.filter = `${this.hoverBrightness}`;
         }
     }
-    initCards(data) {
+    addListenersToCard(cardImg) {
+        // Mouseover card
+        var reserveDiv = document.getElementById("reserve-options");
+        var pickCardDiv = document.getElementById("pick-card-options");
+        cardImg.addEventListener("mouseenter", () => {
+            if (reserveDiv.style.display === "block") {
+                this.mouseEnterStyle(cardImg, "crimson");
+            }
+            else if (pickCardDiv.style.display === "block") {
+                this.mouseEnterStyle(cardImg, "green");
+            }
+        });
+        cardImg.addEventListener("mouseleave", () => {
+            if (reserveDiv.style.display === "block") {
+                this.mouseLeaveStyle(cardImg, "crimson");
+            }
+            else if (pickCardDiv.style.display === "block") {
+                this.mouseLeaveStyle(cardImg, "green");
+            }
+        });
+        // Select card
+        cardImg.addEventListener("click", () => {
+            if (reserveDiv.style.display === "block") {
+                this.mouseClickStyle(cardImg, "crimson");
+            }
+            else if (pickCardDiv.style.display === "block") {
+                this.mouseClickStyle(cardImg, "green");
+            }
+        });
+    }
+    initCards(data, firstInit) {
         const levels = ["1", "2", "3"];
         levels.forEach(cardLevel => {
             const positions = ["1", "2", "3", "4"];
@@ -120,34 +150,9 @@ export class Engine {
                 this.board.placeCard(+cardLevel, +cardPosition, card);
                 // Event listeners
                 var cardImg = document.querySelector(`#level${cardLevel}-${cardPosition} img`);
-                // Mouseover card
-                var reserveDiv = document.getElementById("reserve-options");
-                var pickCardDiv = document.getElementById("pick-card-options");
-                cardImg.addEventListener("mouseenter", () => {
-                    if (reserveDiv.style.display === "block") {
-                        this.mouseEnterStyle(cardImg, "crimson");
-                    }
-                    else if (pickCardDiv.style.display === "block") {
-                        this.mouseEnterStyle(cardImg, "green");
-                    }
-                });
-                cardImg.addEventListener("mouseleave", () => {
-                    if (reserveDiv.style.display === "block") {
-                        this.mouseLeaveStyle(cardImg, "crimson");
-                    }
-                    else if (pickCardDiv.style.display === "block") {
-                        this.mouseLeaveStyle(cardImg, "green");
-                    }
-                });
-                // Select card
-                cardImg.addEventListener("click", () => {
-                    if (reserveDiv.style.display === "block") {
-                        this.mouseClickStyle(cardImg, "crimson");
-                    }
-                    else if (pickCardDiv.style.display === "block") {
-                        this.mouseClickStyle(cardImg, "green");
-                    }
-                });
+                if (firstInit) {
+                    this.addListenersToCard(cardImg);
+                }
             });
         });
     }

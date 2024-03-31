@@ -1,6 +1,7 @@
 var express = require('express');
 var sql = require('../mysql_queries');
 var uuid = require('uuid');
+var eventsRouter = require('./events');
 
 var router = express.Router();
 var conn = sql.createConn();
@@ -38,9 +39,10 @@ router.get('/get-game-state', async function(request, response, next) {
 });
 
 /* Update DB with current game state */
-router.post('/action-update', function(request, response, next) {
+router.post('/action-update', async function(request, response, next) {
 	sql.insertNewAction(conn, request.body);
 	console.log(`DB updated`);
+	eventsRouter.sendEventsToAll("abc");
 	response.send("Success");
 });
 
