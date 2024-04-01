@@ -186,6 +186,16 @@ export class Player {
     }
 
     public updateDisplay() {
+        var turnAlertBar = document.getElementById("current-turn-player");
+        if (this.playerId === this.engine.playerTurn) {
+            turnAlertBar.innerHTML = `Your turn`;
+            turnAlertBar.style.backgroundColor = "#34d414";
+        } else {
+            turnAlertBar.innerHTML = `Waiting for Player ${this.engine.playerTurn}`;
+            turnAlertBar.style.backgroundColor = "red";
+        }
+
+        document.querySelector("#player-number").innerHTML = `Player ${this.engine.thisPlayerId}`;
         document.querySelector("#player-score").innerHTML = `Score: ${this.score.points}`;
         document.querySelector("#player-avenger-points").innerHTML = `Avenger points: ${this.score.avengerPoints}`;
 

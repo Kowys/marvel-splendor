@@ -40,6 +40,23 @@ button:hover, button:active {
   display: none
 }
 
+#current-turn-player {
+  /* position: absolute;
+  right: 150px; */
+  background-color: #34d414;
+  color: rgb(255, 255, 255);
+  padding: 14px 50px;
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-right: 10px;
+}
+
+#player-number {
+  text-align: center;
+  width:100%;
+}
+
 .gems {
   display: inline-block;
   text-align: center;
