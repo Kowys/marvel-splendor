@@ -78,15 +78,6 @@ export class Engine {
         document.getElementById("reserve-options").style.display = null;
         document.getElementById("pick-card-options").style.display = null;
 
-        var pick3Form = document.getElementById("pick3-form");
-        pick3Form.replaceWith(pick3Form.cloneNode(true));
-        var pick2Form = document.getElementById("pick2-form");
-        pick2Form.replaceWith(pick2Form.cloneNode(true));
-        var reserveForm = document.getElementById("reserve-form");
-        reserveForm.replaceWith(reserveForm.cloneNode(true));
-        var pickCardForm = document.getElementById("pick-card-form");
-        pickCardForm.replaceWith(pickCardForm.cloneNode(true));
-
         var cardContainerImgs = document.querySelectorAll('.card-container img') as NodeListOf<HTMLInputElement>;
         cardContainerImgs.forEach(cardImg => {
             cardImg.checked = false;
