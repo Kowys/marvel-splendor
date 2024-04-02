@@ -153,6 +153,7 @@ function initGameTable(conn, table_name, numPlayers) {
         card_level_1_1, card_level_1_2, card_level_1_3, card_level_1_4, \
         card_level_2_1, card_level_2_2, card_level_2_3, card_level_2_4, \
         card_level_3_1, card_level_3_2, card_level_3_3, card_level_3_4, \
+        avengers_tile_player, \
         player_1_currency_blue, player_1_currency_red, player_1_currency_yellow, player_1_currency_purple, player_1_currency_orange, player_1_currency_shield, \
         player_2_currency_blue, player_2_currency_red, player_2_currency_yellow, player_2_currency_purple, player_2_currency_orange, player_2_currency_shield, \
         player_3_currency_blue, player_3_currency_red, player_3_currency_yellow, player_3_currency_purple, player_3_currency_orange, player_3_currency_shield, \
@@ -164,6 +165,7 @@ function initGameTable(conn, table_name, numPlayers) {
         ?, ?, ?, ?, \
         ?, ?, ?, ?, \
         ?, ?, ?, ?, \
+        0, \
         0, 0, 0, 0, 0, 0, \
         0, 0, 0, 0, 0, 0, \
         0, 0, 0, 0, 0, 0, \
@@ -231,6 +233,7 @@ function insertNewAction(conn, data) {
         card_level_1_1, card_level_1_2, card_level_1_3, card_level_1_4, \
         card_level_2_1, card_level_2_2, card_level_2_3, card_level_2_4, \
         card_level_3_1, card_level_3_2, card_level_3_3, card_level_3_4, \
+        avengers_tile_player, \
         player_1_currency_blue, player_1_currency_red, player_1_currency_yellow, player_1_currency_purple, player_1_currency_orange, player_1_currency_shield, \
         player_2_currency_blue, player_2_currency_red, player_2_currency_yellow, player_2_currency_purple, player_2_currency_orange, player_2_currency_shield, \
         player_3_currency_blue, player_3_currency_red, player_3_currency_yellow, player_3_currency_purple, player_3_currency_orange, player_3_currency_shield, \
@@ -243,6 +246,7 @@ function insertNewAction(conn, data) {
         ?, ?, ?, ?, \
         ?, ?, ?, ?, \
         ?, ?, ?, ?, \
+        ?, \
         ?, ?, ?, ?, ?, ?, \
         ?, ?, ?, ?, ?, ?, \
         ?, ?, ?, ?, ?, ?, \
@@ -257,7 +261,8 @@ function insertNewAction(conn, data) {
         data.board_currency_blue, data.board_currency_red, data.board_currency_yellow, data.board_currency_purple, data.board_currency_orange, data.board_currency_shield,
         data.card_level_1_1, data.card_level_1_2, data.card_level_1_3, data.card_level_1_4,
         data.card_level_2_1, data.card_level_2_2, data.card_level_2_3, data.card_level_2_4,
-        data.card_level_3_1, data.card_level_3_2, data.card_level_3_3, data.card_level_3_4
+        data.card_level_3_1, data.card_level_3_2, data.card_level_3_3, data.card_level_3_4,
+        data.avengers_tile_player
     ];
 
     // Player currencies

@@ -11,6 +11,7 @@ export class Engine {
     round;
     playerTurn;
     gameState;
+    avengersTilePlayer;
     hoverBrightness = "brightness(1.1)";
     async setupGame(currentUrl, firstInit) {
         const data = await this.getGameStateFromDB(currentUrl);
@@ -23,6 +24,7 @@ export class Engine {
         this.round = data.round;
         this.playerTurn = data.player_turn;
         this.gameState = data.game_state;
+        this.avengersTilePlayer = data.avengers_tile_player;
         this.deck = new Deck();
         this.deck.resetDeck();
         this.board = new Board();
@@ -160,6 +162,12 @@ export class Engine {
         document.querySelector("#player-count").innerHTML = `Number of players: ${this.numberOfPlayers}`;
         document.querySelector("#round-number").innerHTML = `Round: ${this.round}`;
         document.querySelector("#player-turn").innerHTML = `Player ${this.playerTurn}'s turn`;
+        var avengers_text = "Not claimed";
+        if (this.avengersTilePlayer !== 0) {
+            avengers_text = `Player ${this.avengersTilePlayer}`;
+        }
+        ;
+        document.querySelector("#avengers-tile-holder").innerHTML = `Avengers tile: ${avengers_text}`;
         document.querySelector("#blue-gems").innerHTML = `Blue gems: ${this.board.currency.blue}`;
         document.querySelector("#red-gems").innerHTML = `Red gems: ${this.board.currency.red}`;
         document.querySelector("#yellow-gems").innerHTML = `Yellow gems: ${this.board.currency.yellow}`;

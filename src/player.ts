@@ -53,10 +53,10 @@ export class Player {
                 }
                 this.cards[`${cardColor}`].push(card);
             });
-        }
+        };
         
         // Player reserved cards
-        var reservedCardNames = data[`player_${this.playerId}_cards_reserved`].split(',')
+        var reservedCardNames = data[`player_${this.playerId}_cards_reserved`].split(',');
         if (reservedCardNames[0] !== '') {
             reservedCardNames.forEach(name => {
                 var card = this.engine.deck.takeNamedCard(name);
@@ -64,9 +64,14 @@ export class Player {
             });
         };
 
+        // Avenger points update
+        if (data[`avengers_tile_player`] === this.playerId) {
+            this.score.points += 3;
+        };
+
         if (this.playerId === data.player_id) {
-            this.updateDisplay()
-        }
+            this.updateDisplay();
+        };
     }
 
     private takeGems(color: string, amount: number) {
@@ -90,6 +95,19 @@ export class Player {
             }
         });
         return true
+    }
+
+    private updateAvengersTile() {
+        var maxAvengerPoints = 0;
+        this.engine.players.forEach(player => {
+            if (player.playerId !== this.playerId) {
+                maxAvengerPoints = Math.max(maxAvengerPoints, player.score.avengerPoints);
+            }
+        });
+        if (this.score.avengerPoints >= 3 && this.score.avengerPoints > maxAvengerPoints) {
+            this.score.points += 3;
+            this.engine.avengersTilePlayer = this.playerId;
+        }
     }
 
     private buyCard(card: Card) {
@@ -119,6 +137,9 @@ export class Player {
                 this.cards[color].push(card);
                 this.score.points += card.points.points;
                 this.score.avengerPoints += card.points.avengerPoints;
+
+                this.updateAvengersTile();
+
                 if (card.cardInfo.level === 3) {
                     this.score.greenGems += 1;
                 }
@@ -154,6 +175,7 @@ export class Player {
             "card_level_3_2": this.engine.board.levelThreeCards.pos2.cardInfo.name,
             "card_level_3_3": this.engine.board.levelThreeCards.pos3.cardInfo.name,
             "card_level_3_4": this.engine.board.levelThreeCards.pos4.cardInfo.name,
+            "avengers_tile_player": this.engine.avengersTilePlayer
         };
 
         for (var i = 1; i <= this.engine.numberOfPlayers; i++) {
