@@ -42,6 +42,13 @@ export class Deck {
                 return;
             }
         });
+        this.locationCards.forEach(card => {
+            if (card.cardInfo.name === name) {
+                targetCard = card;
+                this.locationCards = this.locationCards.filter(c => c.cardInfo.name !== targetCard.cardInfo.name);
+                return;
+            }
+        });
         return targetCard;
     }
 

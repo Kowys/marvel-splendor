@@ -8,15 +8,18 @@ export class Board {
 
     public currency: Currency = {blue: null, red: null, yellow: null, purple: null, orange: null, shield: null}
 
-    public placeCard(level: number, position: number, card: Card) {
-        if (level === 1) {
+    public placeCard(level: string, position: number, card: Card) {
+        if (level === "1") {
             this.placeLevelOneCard(position, card);
         } else
-        if (level === 2) {
+        if (level === "2") {
             this.placeLevelTwoCard(position, card);
         } else
-        if (level === 3) {
+        if (level === "3") {
             this.placeLevelThreeCard(position, card);
+        }
+        if (level === "loc") {
+            this.placeLocationCard(position, card);
         }
         this.updateCardDisplay(level, position, card);
     }
@@ -31,6 +34,10 @@ export class Board {
 
     public placeLevelThreeCard(position: number, card: Card) {
         this.levelThreeCards[`pos${position}`] = card;
+    }
+
+    public placeLocationCard(position: number, card: Card) {
+        this.locationCards[`pos${position}`] = card;
     }
 
     public getCard(level: number, position: number) {
@@ -69,14 +76,24 @@ export class Board {
         this.currency[`${colour}`] -= amount
     }
 
-    public updateCardDisplay(level: number, position: number, card: Card) {
-        const cardElement = document.querySelector(`#card-${level}-${position}`) as HTMLInputElement;
+    public updateCardDisplay(level: string, position: number, card: Card) {
+        var cardElement = null;
+        if (level === "loc") {
+            cardElement = document.querySelector(`#location-img-${position}`) as HTMLInputElement;
+        } else {
+            cardElement = document.querySelector(`#card-${level}-${position}`) as HTMLInputElement;
+        }
+        
         if (card === null) {
             cardElement.style.display = "none";
             cardElement.checked = false;
         } else {
             cardElement.style.display = "block";
-            cardElement.src = `./images/cards/${card.cardInfo.imageLink}`;
+            if (level === "loc") {
+                cardElement.src = `./images/locations/${card.cardInfo.imageLink}`;
+            } else {
+                cardElement.src = `./images/cards/${card.cardInfo.imageLink}`;
+            }
             cardElement.checked = false;
             cardElement.style.filter = null;
         }

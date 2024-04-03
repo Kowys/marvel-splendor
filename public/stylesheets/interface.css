@@ -109,6 +109,24 @@ button:hover, button:active {
   background:rgba(255, 255, 255, 0.5);
 }
 
+.loc-column {
+  display: inline-block;
+  width: 15%;
+  aspect-ratio: 1.0;
+  min-width: 250px;
+  min-height: 200px;
+  padding: 5px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 10px;
+  margin-bottom:10px;
+  border: 3px solid #000;
+  font-size: 16px;
+  position: relative;
+
+  background:rgba(255, 255, 255, 0.5);
+}
+
 .card-container img{
   height: 90%;
   width: 90%;

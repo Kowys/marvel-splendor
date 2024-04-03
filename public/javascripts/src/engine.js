@@ -141,13 +141,20 @@ export class Engine {
             positions.forEach(cardPosition => {
                 var cardName = data[`card_level_${cardLevel}_${cardPosition}`];
                 const card = this.deck.takeNamedCard(cardName);
-                this.board.placeCard(+cardLevel, +cardPosition, card);
+                this.board.placeCard(cardLevel, +cardPosition, card);
                 // Event listeners
                 var cardImg = document.querySelector(`#level${cardLevel}-${cardPosition} img`);
                 if (firstInit) {
                     this.addListenersToCard(cardImg);
                 }
             });
+        });
+        // Locations
+        const positions = ["1", "2", "3", "4"];
+        positions.forEach(cardPosition => {
+            var cardName = data[`location_${cardPosition}`];
+            const card = this.deck.takeNamedCard(cardName);
+            this.board.placeCard("loc", +cardPosition, card);
         });
     }
     initCurrency(data) {
@@ -159,6 +166,10 @@ export class Engine {
         this.board.updateCurrency("shield", data.board_currency_shield);
     }
     updateDisplay() {
+        if (this.gameState === "ended") {
+            const winner = this.checkWinConditions();
+            this.declareWinner(winner);
+        }
         document.querySelector("#player-count").innerHTML = `Number of players: ${this.numberOfPlayers}`;
         document.querySelector("#round-number").innerHTML = `Round: ${this.round}`;
         document.querySelector("#player-turn").innerHTML = `Player ${this.playerTurn}'s turn`;
@@ -196,18 +207,15 @@ export class Engine {
     }
     declareWinner(player) {
         document.querySelector("#game-winner").innerHTML = `Player ${player.playerId} has won the game!`;
-        this.gameState = "ended";
     }
     nextPlayerTurn() {
         if (this.playerTurn % this.numberOfPlayers === 0) {
             const winner = this.checkWinConditions();
             if (winner !== null) {
-                this.declareWinner(winner);
-                return;
+                this.gameState = "ended";
             }
             this.round += 1;
         }
         this.playerTurn = (this.playerTurn % this.numberOfPlayers) + 1;
-        this.updateDisplay();
     }
 }

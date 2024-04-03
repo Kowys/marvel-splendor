@@ -128,7 +128,7 @@ function createGameTableColumns(conn, table_name) {
         card_level_1_1 VARCHAR(255), card_level_1_2 VARCHAR(255), card_level_1_3 VARCHAR(255), card_level_1_4 VARCHAR(255), \
         card_level_2_1 VARCHAR(255), card_level_2_2 VARCHAR(255), card_level_2_3 VARCHAR(255), card_level_2_4 VARCHAR(255), \
         card_level_3_1 VARCHAR(255), card_level_3_2 VARCHAR(255), card_level_3_3 VARCHAR(255), card_level_3_4 VARCHAR(255), \
-        location_1 VARCHAR(255), location_2 VARCHAR(255), location_3 VARCHAR(255), \
+        location_1 VARCHAR(255), location_2 VARCHAR(255), location_3 VARCHAR(255), location_4 VARCHAR(255), \
         avengers_tile_player TINYINT, \
         player_1_currency_blue TINYINT, player_1_currency_red TINYINT, player_1_currency_yellow TINYINT, player_1_currency_purple TINYINT, player_1_currency_orange TINYINT, player_1_currency_shield TINYINT, \
         player_2_currency_blue TINYINT, player_2_currency_red TINYINT, player_2_currency_yellow TINYINT, player_2_currency_purple TINYINT, player_2_currency_orange TINYINT, player_2_currency_shield TINYINT, \
@@ -153,6 +153,7 @@ function initGameTable(conn, table_name, numPlayers) {
         card_level_1_1, card_level_1_2, card_level_1_3, card_level_1_4, \
         card_level_2_1, card_level_2_2, card_level_2_3, card_level_2_4, \
         card_level_3_1, card_level_3_2, card_level_3_3, card_level_3_4, \
+        location_1, location_2, location_3, location_4, \
         avengers_tile_player, \
         player_1_currency_blue, player_1_currency_red, player_1_currency_yellow, player_1_currency_purple, player_1_currency_orange, player_1_currency_shield, \
         player_2_currency_blue, player_2_currency_red, player_2_currency_yellow, player_2_currency_purple, player_2_currency_orange, player_2_currency_shield, \
@@ -162,6 +163,7 @@ function initGameTable(conn, table_name, numPlayers) {
     ) VALUES ( \
         'active', ?, 1, 1, 1, \
         ?, ?, ?, ?, ?, ?, \
+        ?, ?, ?, ?, \
         ?, ?, ?, ?, \
         ?, ?, ?, ?, \
         ?, ?, ?, ?, \
@@ -175,7 +177,7 @@ function initGameTable(conn, table_name, numPlayers) {
 
     var customValues = [table_name, numPlayers];
     var boardCurrencies = getInitialBoardCurrencies(numPlayers);
-    var cards = getInitialCards();
+    var cards = getInitialCards(numPlayers);
     var gameTableValues = customValues.concat(boardCurrencies, cards);
     conn.query(initTableQuery, gameTableValues,  function (err, result) {
         if (err) throw err;
@@ -195,10 +197,11 @@ function getInitialBoardCurrencies(numPlayers) {
     return colors.concat([shieldAmt]);
 }
 
-function getInitialCards() {
+function getInitialCards(numPlayers) {
     var levelOneCards = [];
     var levelTwoCards = [];
     var levelThreeCards = [];
+    var locationCards = [];
     cardsJson.cards.forEach(cardJson => {
         if (cardJson.level === 1) {
             levelOneCards.push(cardJson.name);
@@ -209,6 +212,9 @@ function getInitialCards() {
         if (cardJson.level === 3) {
             levelThreeCards.push(cardJson.name);
         }
+        if (cardJson.isLocation === true) {
+            locationCards.push(cardJson.name);
+        }
     });
 
     const shuffle = (array) => { 
@@ -218,12 +224,18 @@ function getInitialCards() {
     levelOneCards = shuffle(levelOneCards);
     levelTwoCards = shuffle(levelTwoCards);
     levelThreeCards = shuffle(levelThreeCards);
+    locationCards = shuffle(locationCards);
 
     var levelOneCardsInitial = levelOneCards.slice(0, 4);
     var levelTwoCardsInitial = levelTwoCards.slice(0, 4);
     var levelThreeCardsInitial = levelThreeCards.slice(0, 4);
+    var locationCardsInitial = locationCards.slice(0, numPlayers);
 
-    return levelOneCardsInitial.concat(levelTwoCardsInitial, levelThreeCardsInitial);
+    for (i = numPlayers; i < 4; i++) {
+        locationCardsInitial.push("");
+    };
+
+    return levelOneCardsInitial.concat(levelTwoCardsInitial, levelThreeCardsInitial, locationCardsInitial);
 }
 
 function insertNewAction(conn, data) {
@@ -233,6 +245,7 @@ function insertNewAction(conn, data) {
         card_level_1_1, card_level_1_2, card_level_1_3, card_level_1_4, \
         card_level_2_1, card_level_2_2, card_level_2_3, card_level_2_4, \
         card_level_3_1, card_level_3_2, card_level_3_3, card_level_3_4, \
+        location_1, location_2, location_3, location_4, \
         avengers_tile_player, \
         player_1_currency_blue, player_1_currency_red, player_1_currency_yellow, player_1_currency_purple, player_1_currency_orange, player_1_currency_shield, \
         player_2_currency_blue, player_2_currency_red, player_2_currency_yellow, player_2_currency_purple, player_2_currency_orange, player_2_currency_shield, \
@@ -243,6 +256,7 @@ function insertNewAction(conn, data) {
     ) VALUES ( \
         ?, ?, ?, ?, ?, \
         ?, ?, ?, ?, ?, ?, \
+        ?, ?, ?, ?, \
         ?, ?, ?, ?, \
         ?, ?, ?, ?, \
         ?, ?, ?, ?, \
@@ -262,6 +276,7 @@ function insertNewAction(conn, data) {
         data.card_level_1_1, data.card_level_1_2, data.card_level_1_3, data.card_level_1_4,
         data.card_level_2_1, data.card_level_2_2, data.card_level_2_3, data.card_level_2_4,
         data.card_level_3_1, data.card_level_3_2, data.card_level_3_3, data.card_level_3_4,
+        data.location_1, data.location_2, data.location_3, data.location_4,
         data.avengers_tile_player
     ];
 

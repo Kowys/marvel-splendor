@@ -153,13 +153,13 @@ export class Engine {
     }
  
     public initCards(data: any, firstInit: boolean) {
-        const levels = ["1","2","3"]
+        const levels = ["1","2","3"];
         levels.forEach(cardLevel => {
             const positions = ["1","2","3","4"];
             positions.forEach(cardPosition => {
                 var cardName = data[`card_level_${cardLevel}_${cardPosition}`];
                 const card = this.deck.takeNamedCard(cardName);
-                this.board.placeCard(+cardLevel, +cardPosition, card);
+                this.board.placeCard(cardLevel, +cardPosition, card);
 
                 // Event listeners
                 var cardImg = document.querySelector(`#level${cardLevel}-${cardPosition} img`) as HTMLInputElement;
@@ -167,6 +167,14 @@ export class Engine {
                     this.addListenersToCard(cardImg);
                 }
             });
+        });
+
+        // Locations
+        const positions = ["1","2","3","4"];
+        positions.forEach(cardPosition => {
+            var cardName = data[`location_${cardPosition}`];
+            const card = this.deck.takeNamedCard(cardName);
+            this.board.placeCard("loc", +cardPosition, card);
         });
     }
 
@@ -180,6 +188,11 @@ export class Engine {
     }
 
     public updateDisplay() {
+        if (this.gameState === "ended") {
+            const winner = this.checkWinConditions();
+            this.declareWinner(winner);
+        }
+
         document.querySelector("#player-count").innerHTML = `Number of players: ${this.numberOfPlayers}`;
         document.querySelector("#round-number").innerHTML = `Round: ${this.round}`;
         document.querySelector("#player-turn").innerHTML = `Player ${this.playerTurn}'s turn`;
@@ -209,7 +222,7 @@ export class Engine {
         return hasCards;
     }
 
-    private checkWinConditions() {
+    private checkWinConditions() { // Consider case of more than one player reaching win conditions (tiebreaker etc.)
         var winner = null;
         this.players.forEach(player => {
             if (this.hasOneOfEachCard(player) && player.score.points >= 16 && player.score.greenGems >= 1) {
@@ -222,20 +235,17 @@ export class Engine {
 
     private declareWinner(player: Player) {
         document.querySelector("#game-winner").innerHTML = `Player ${player.playerId} has won the game!`;
-        this.gameState = "ended";
     }
 
     public nextPlayerTurn() {
         if (this.playerTurn % this.numberOfPlayers === 0) {
             const winner = this.checkWinConditions();
             if (winner !== null) {
-                this.declareWinner(winner);
-                return
+                this.gameState = "ended";
             }
             this.round += 1;
         }
 
         this.playerTurn = (this.playerTurn % this.numberOfPlayers) + 1;
-        this.updateDisplay();
     }
 }
