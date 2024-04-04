@@ -310,6 +310,14 @@ export class Player {
                 throw new Error(`Not enough ${gem} gems, please make another selection.`);
             }
         });
+        var gemCount = 0;
+        var colors = ["blue","red","yellow","purple","orange"];
+        colors.forEach(color => {
+            gemCount += this.currency[`${color}`];
+        });
+        if (gemCount + actionVal.length > 10) {
+            throw new Error(`Maximum of 10 total gems, please spend or discard some gems first.`);
+        }
 
         var actionString = "";
 
@@ -345,6 +353,14 @@ export class Player {
                 throw new Error(`Not enough ${gem} gems (pile must have at least 4 gems).`);
             }
         });
+        var gemCount = 0;
+        var colors = ["blue","red","yellow","purple","orange"];
+        colors.forEach(color => {
+            gemCount += this.currency[`${color}`];
+        });
+        if (gemCount + 2 > 10) {
+            throw new Error(`Maximum of 10 total gems, please spend or discard some gems first.`);
+        }
 
         var actionString = "";
 
