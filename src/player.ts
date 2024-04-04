@@ -311,7 +311,7 @@ export class Player {
             }
         });
         var gemCount = 0;
-        var colors = ["blue","red","yellow","purple","orange"];
+        var colors = ["blue","red","yellow","purple","orange","shield"];
         colors.forEach(color => {
             gemCount += this.currency[`${color}`];
         });
@@ -354,7 +354,7 @@ export class Player {
             }
         });
         var gemCount = 0;
-        var colors = ["blue","red","yellow","purple","orange"];
+        var colors = ["blue","red","yellow","purple","orange","shield"];
         colors.forEach(color => {
             gemCount += this.currency[`${color}`];
         });
@@ -396,6 +396,15 @@ export class Player {
             if (this.reserved.length >= 3) {
                 throw new Error(`Cannot have more than 3 reserved cards at a time.`);
             }
+            var gemCount = 0;
+            var colors = ["blue","red","yellow","purple","orange","shield"];
+            colors.forEach(color => {
+                gemCount += this.currency[`${color}`];
+            });
+            if (gemCount + 1 > 10) {
+                throw new Error(`Maximum of 10 total gems, please spend or discard some gems first.`);
+            }
+
             this.reserved.push(card);
 
             try {
