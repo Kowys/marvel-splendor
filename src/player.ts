@@ -16,7 +16,7 @@ export class Player {
         this.engine = engine;
     }
 
-    public initState(data: any) {
+    public initState(data: any, firstinit: boolean) {
         // Player currency
         this.currency.blue = data[`player_${this.playerId}_currency_blue`]
         this.currency.red = data[`player_${this.playerId}_currency_red`]
@@ -73,8 +73,36 @@ export class Player {
         };
 
         if (this.playerId === data.player_id) {
+            if (firstinit) {
+                this.addListenersToReserved();
+            }
             this.updateDisplay();
         };
+    }
+
+    private addListenersToReserved() {
+        for (var i = 1; i <= 3; i++) {
+            const cardImg = document.querySelector(`#reserved-${i} img`) as HTMLInputElement;
+            // Mouseover card
+            var pickCardDiv = document.getElementById("pick-card-options");
+            cardImg.addEventListener("mouseenter", () => {
+                if (pickCardDiv.style.display === "block") {
+                    this.engine.mouseEnterStyle(cardImg, "green");
+                } 
+            });
+            cardImg.addEventListener("mouseleave", () => {
+                if (pickCardDiv.style.display === "block") {
+                    this.engine.mouseLeaveStyle(cardImg, "green")
+                }
+            });
+
+            // Select card
+            cardImg.addEventListener("click", () => {
+                if (pickCardDiv.style.display === "block") {
+                    this.engine.mouseClickStyle(cardImg, "green");
+                }
+            });
+        }
     }
 
     private takeGems(color: string, amount: number) {
@@ -246,6 +274,22 @@ export class Player {
         })
     }
 
+    private updateReservedDisplay() {
+        for (var i = 1; i <= 3; i++) {
+            var cardElement = document.querySelector(`#card-r-${i}`) as HTMLInputElement;
+            if (i <= this.reserved.length) {
+                var card = this.reserved[i-1];
+                cardElement.style.display = "block";
+                cardElement.src = `./images/cards/${card.cardInfo.imageLink}`;
+                cardElement.checked = false;
+                cardElement.style.filter = null;
+            } else {
+                cardElement.style.display = "none";
+                cardElement.checked = false;
+            }
+        }
+    }
+
     public updateDisplay() {
         var turnAlertBar = document.getElementById("current-turn-player");
         if (this.playerId === this.engine.playerTurn) {
@@ -274,6 +318,8 @@ export class Player {
         document.querySelector("#player-orange-cards").innerHTML = `Orange cards: ${this.cards.orange.length}`;
         document.querySelector("#player-location-cards").innerHTML = `Location cards: ${this.cards.location.length}`;
         document.querySelector("#player-reserved-cards").innerHTML = `Reserved cards: ${this.reserved.length}`;
+
+        this.updateReservedDisplay();
     }
 
     public takeAction(actionType: string, actionVal: string[]) {
@@ -449,8 +495,14 @@ export class Player {
             var level = cardId.split("-")[1];
             var position = cardId.split("-")[2];
 
-            const card = this.engine.board.getCard(+level, +position);
-            if (card === undefined) {
+            var card = null;
+            if (level === "r") {
+                card = this.reserved[`${+position-1}`];
+            } else {
+                card = this.engine.board.getCard(+level, +position);
+            }
+            
+            if (!card) {
                 throw new Error(`Card id ${cardId} does not exist`);
             }
 
@@ -461,12 +513,16 @@ export class Player {
                 throw error
             }
 
-            // Update all displays after successfully buying card
-            try {
-                const newCard = this.engine.deck.takeCard(+level);
-                this.engine.board.placeCard(level, +position, newCard)
-            } catch (error) {
-                this.engine.board.placeCard(level, +position, null)
+            // Update board after successfully buying card
+            if (level === "r") {
+                this.reserved = this.reserved.filter(reservedCard => reservedCard.cardInfo.name !== card.cardInfo.name);
+            } else {
+                try {
+                    const newCard = this.engine.deck.takeCard(+level);
+                    this.engine.board.placeCard(level, +position, newCard)
+                } catch (error) {
+                    this.engine.board.placeCard(level, +position, null)
+                }
             }
 
             var actionString = card.cardInfo.name;

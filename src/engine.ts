@@ -38,7 +38,7 @@ export class Engine {
         this.board = new Board();
 
         this.resetActionButtonsAndForms();
-        this.initPlayers(data);
+        this.initPlayers(data, firstInit);
         this.initCards(data, firstInit);
         this.initCurrency(data);
         this.updateDisplay();
@@ -56,11 +56,11 @@ export class Engine {
         return data;
     }
 
-    public initPlayers(data: object) {
+    public initPlayers(data: object, firstInit: boolean) {
         document.getElementById("player-display").style.display = "block";
         for (var i = 1; i <= this.numberOfPlayers; i++) {
             const player = new Player(i, this);
-            player.initState(data);
+            player.initState(data, firstInit);
             this.players.push(player);
         }
     }
@@ -89,7 +89,7 @@ export class Engine {
         });
     }
 
-    private mouseEnterStyle(cardImg: HTMLInputElement, color: string) {
+    public mouseEnterStyle(cardImg: HTMLInputElement, color: string) {
         if (cardImg.checked) {
             cardImg.style.filter = `${this.hoverBrightness} drop-shadow(0 0 0.75rem ${color})`;
         } else {
@@ -97,7 +97,7 @@ export class Engine {
         }
     }
 
-    private mouseLeaveStyle(cardImg: HTMLInputElement, color: string) {
+    public mouseLeaveStyle(cardImg: HTMLInputElement, color: string) {
         if (cardImg.checked) {
             cardImg.style.filter = `drop-shadow(0 0 0.75rem ${color})`;
         } else {
@@ -105,7 +105,7 @@ export class Engine {
         }
     }
 
-    private mouseClickStyle(cardImg: HTMLInputElement, color: string) {
+    public mouseClickStyle(cardImg: HTMLInputElement, color: string) {
         if (!cardImg.checked) {
             var cImgs = document.querySelectorAll('.card-container img') as NodeListOf<HTMLInputElement>;
             cImgs.forEach(cImg => {

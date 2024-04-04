@@ -29,7 +29,7 @@ export class Engine {
         this.deck.resetDeck();
         this.board = new Board();
         this.resetActionButtonsAndForms();
-        this.initPlayers(data);
+        this.initPlayers(data, firstInit);
         this.initCards(data, firstInit);
         this.initCurrency(data);
         this.updateDisplay();
@@ -45,11 +45,11 @@ export class Engine {
         const data = await response.json();
         return data;
     }
-    initPlayers(data) {
+    initPlayers(data, firstInit) {
         document.getElementById("player-display").style.display = "block";
         for (var i = 1; i <= this.numberOfPlayers; i++) {
             const player = new Player(i, this);
-            player.initState(data);
+            player.initState(data, firstInit);
             this.players.push(player);
         }
     }
