@@ -198,11 +198,45 @@ export class Engine {
         });
         return hasCards;
     }
+    tieBreaker(winner, player) {
+        if (player.score.points > winner.score.points) {
+            return player;
+        }
+        else if (player.score.points < winner.score.points) {
+            return winner;
+        }
+        else if (player.playerId === this.avengersTilePlayer) {
+            return player;
+        }
+        else if (winner.playerId === this.avengersTilePlayer) {
+            return winner;
+        }
+        else {
+            const colors = ["blue", "red", "yellow", "purple", "orange"];
+            var playerCardCount = 0;
+            var winnerCardCount = 0;
+            colors.forEach(color => {
+                playerCardCount += player.cards[`${color}`].length;
+                winnerCardCount += winner.cards[`${color}`].length;
+            });
+            if (playerCardCount < winnerCardCount) {
+                return player;
+            }
+            else {
+                return winner;
+            }
+        }
+    }
     checkWinConditions() {
         var winner = null;
         this.players.forEach(player => {
             if (this.hasOneOfEachCard(player) && player.score.points >= 16 && player.score.greenGems >= 1) {
-                winner = player;
+                if (winner === null) {
+                    winner = player;
+                }
+                else {
+                    winner = this.tieBreaker(winner, player);
+                }
             }
         });
         return winner;

@@ -140,7 +140,14 @@ export class Player {
                 maxAvengerPoints = Math.max(maxAvengerPoints, player.score.avengerPoints);
             }
         });
-        if (this.score.avengerPoints >= 3 && this.score.avengerPoints > maxAvengerPoints) {
+        // If avengers tile changes hands to current player
+        if (this.engine.avengersTilePlayer !== this.playerId && this.score.avengerPoints >= 3 && this.score.avengerPoints > maxAvengerPoints) {
+            // Avoid repeat update when already have avengers tile
+            // Subtract from old holder of avengers tile upon switch
+            if (this.engine.avengersTilePlayer !== 0) {
+                var prevHolder = this.engine.players[this.engine.avengersTilePlayer-1];
+                prevHolder.score.points -= 3;
+            }
             this.score.points += 3;
             this.engine.avengersTilePlayer = this.playerId;
         }
