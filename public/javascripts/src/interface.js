@@ -5,10 +5,12 @@ const pick3Button = document.querySelector("#pick-3-button");
 const pick2Button = document.querySelector("#pick-2-button");
 const reserveButton = document.querySelector("#reserve-button");
 const pickCardButton = document.querySelector("#pick-card-button");
+const discardGemsButton = document.querySelector("#discard-gems-button");
 var pick2Form = document.getElementById("pick2-form");
 var pick3Form = document.getElementById("pick3-form");
 var reserveForm = document.getElementById("reserve-form");
 var pickCardForm = document.getElementById("pick-card-form");
+var discardGemsForm = document.getElementById("discard-gems-form");
 const engine = new Engine();
 engine.setupGame(window.location.pathname, true);
 const evtSource = new EventSource(`${window.location.origin}/events`);
@@ -92,6 +94,9 @@ function addReserveForm() {
 function addPickCardForm() {
     document.getElementById("pick-card-options").style.display = "block";
 }
+function addDiscardGemsForm() {
+    document.getElementById("discard-gems-options").style.display = "block";
+}
 pick3Form.addEventListener("submit", (event) => {
     event.preventDefault();
     const pick3List = ["blue", "red", "yellow", "purple", "orange"];
@@ -138,6 +143,18 @@ pickCardForm.addEventListener("submit", (event) => {
     });
     submitAction("pick-card", pickCardSelected);
 });
+discardGemsForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const discardList = ["blue", "red", "yellow", "purple", "orange"];
+    var discardSelected = [];
+    discardList.forEach(color => {
+        const discardPresent = document.getElementById(`discard-gem-${color}`).checked;
+        if (discardPresent) {
+            discardSelected.push(color);
+        }
+    });
+    submitAction("discard-gem", discardSelected);
+});
 pick3Button.addEventListener('click', () => {
     engine.resetActionButtonsAndForms();
     document.getElementById("pick-3-button").style.backgroundColor = "red";
@@ -157,4 +174,9 @@ pickCardButton.addEventListener('click', () => {
     engine.resetActionButtonsAndForms();
     document.getElementById("pick-card-button").style.backgroundColor = "red";
     addPickCardForm();
+});
+discardGemsButton.addEventListener('click', () => {
+    engine.resetActionButtonsAndForms();
+    document.getElementById("discard-gems-button").style.backgroundColor = "red";
+    addDiscardGemsForm();
 });

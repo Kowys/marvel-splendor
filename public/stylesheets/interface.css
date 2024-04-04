@@ -40,6 +40,10 @@ button:hover, button:active {
   display: none
 }
 
+#discard-gems-options {
+  display: none
+}
+
 #current-turn-player {
   /* position: absolute;
   right: 150px; */

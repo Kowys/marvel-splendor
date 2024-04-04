@@ -74,6 +74,10 @@ export class Player {
         this.currency[`${color}`] += amount;
         this.engine.board.takeCurrency(color, amount);
     }
+    discardGems(color, amount) {
+        this.currency[`${color}`] -= amount;
+        this.engine.board.addCurrency(color, amount);
+    }
     buyable(card) {
         var shieldAmt = this.currency.shield;
         var colors = ["blue", "red", "yellow", "purple", "orange"];
@@ -271,6 +275,9 @@ export class Player {
         else if (actionType === "pick-card") {
             return this.pickCardAction(actionVal);
         }
+        if (actionType === "discard-gem") {
+            return this.discardGemAction(actionVal);
+        }
     }
     pick3Action(actionVal) {
         if (actionVal.length > 3) {
@@ -424,6 +431,23 @@ export class Player {
             this.updateDisplay();
             this.actionUpdateDB("buy", actionString);
         });
+        return "Success";
+    }
+    discardGemAction(actionVal) {
+        if (actionVal.length !== 1) {
+            throw new Error("Select one gem type");
+        }
+        actionVal.forEach(gem => {
+            if (!this.gemTypes.has(gem)) {
+                throw new Error(`Selected gem: ${gem} is not a valid gem type.`);
+            }
+            if (this.currency[`${gem}`] < 1) {
+                throw new Error(`You do not have any ${gem} gems to discard.`);
+            }
+            this.discardGems(gem, 1);
+        });
+        this.engine.updateDisplay();
+        this.updateDisplay();
         return "Success";
     }
 }

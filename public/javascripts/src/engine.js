@@ -61,10 +61,12 @@ export class Engine {
         document.getElementById("pick-2-button").style.backgroundColor = null;
         document.getElementById("reserve-button").style.backgroundColor = null;
         document.getElementById("pick-card-button").style.backgroundColor = null;
+        document.getElementById("discard-gems-button").style.backgroundColor = null;
         document.getElementById("pick-3-options").style.display = null;
         document.getElementById("pick-2-options").style.display = null;
         document.getElementById("reserve-options").style.display = null;
         document.getElementById("pick-card-options").style.display = null;
+        document.getElementById("discard-gems-options").style.display = null;
         var cardContainerImgs = document.querySelectorAll('.card-container img');
         cardContainerImgs.forEach(cardImg => {
             cardImg.checked = false;
