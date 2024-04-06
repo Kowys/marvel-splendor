@@ -25,7 +25,7 @@ function eventsHandler(request, response, next) {
     const clientId = Date.now();
   
     const newClient = {
-      id: clientId,
+      id: request.query.game_id,
       response
     };
   
@@ -40,8 +40,12 @@ function eventsHandler(request, response, next) {
 router.get('/events', eventsHandler);
 
 // post request to trigger server sent event
-function sendEventsToAll(newFact) {
-    clients.forEach(client => client.response.write(`data: ${JSON.stringify(newFact)}\n\n`))
+function sendEventsToAll(clientId) {
+    clients.forEach(client => {
+      if (client.id === clientId) {
+        client.response.write(`data: ${JSON.stringify(client.id)}\n\n`)
+      }
+    })
     console.log(`Sent message to clients`)
 }
 

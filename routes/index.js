@@ -42,7 +42,7 @@ router.get('/get-game-state', async function(request, response, next) {
 router.post('/action-update', async function(request, response, next) {
 	sql.insertNewAction(conn, request.body);
 	console.log(`DB updated`);
-	eventsRouter.sendEventsToAll("abc");
+	eventsRouter.sendEventsToAll(request.body.table_name);
 	response.send("Success");
 });
 

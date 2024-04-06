@@ -16,9 +16,9 @@ var pickCardForm = document.getElementById("pick-card-form")
 var discardGemsForm = document.getElementById("discard-gems-form")
 
 const engine = new Engine();
-engine.setupGame(window.location.pathname, true);
+await engine.setupGame(window.location.pathname, true);
 
-const evtSource = new EventSource(`${window.location.origin}/events`);
+const evtSource = new EventSource(`${window.location.origin}/events?game_id=${engine.tableName}`);
 
 evtSource.onmessage = (event) => {
     const parsedData = JSON.parse(event.data);

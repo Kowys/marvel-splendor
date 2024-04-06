@@ -12,8 +12,9 @@ var reserveForm = document.getElementById("reserve-form");
 var pickCardForm = document.getElementById("pick-card-form");
 var discardGemsForm = document.getElementById("discard-gems-form");
 const engine = new Engine();
-engine.setupGame(window.location.pathname, true);
-const evtSource = new EventSource(`${window.location.origin}/events`);
+await engine.setupGame(window.location.pathname, true);
+console.log(`Table name: ${engine.tableName}`);
+const evtSource = new EventSource(`${window.location.origin}/events?game_id=${engine.tableName}`);
 evtSource.onmessage = (event) => {
     const parsedData = JSON.parse(event.data);
     engine.setupGame(window.location.pathname, false);

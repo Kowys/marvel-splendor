@@ -58,7 +58,6 @@ async function retrieveGameTable(conn, url_id) {
 
                 var table_name = result[0].table_name;
                 var player_id = result[0].player_id;
-                console.log(`table_name: ${table_name}`);
 
                 var getGameDataQuery = "Select * FROM ?? WHERE round = (SELECT MAX(round) FROM ??) AND turn = (SELECT MAX(turn) FROM ?? WHERE round = (SELECT MAX(round) FROM ??))"
                 conn.query(getGameDataQuery, [table_name, table_name, table_name, table_name], function (err, result) {
