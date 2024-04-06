@@ -71,7 +71,9 @@ export class Player {
             }
             this.updateDisplay();
         }
-        ;
+        else {
+            this.updateOtherPlayerDisplay(data.player_id);
+        }
     }
     addListenersToReserved() {
         for (var i = 1; i <= 3; i++) {
@@ -303,6 +305,30 @@ export class Player {
         document.querySelector("#player-location-cards").innerHTML = `Location cards: ${this.cards.location.length}`;
         document.querySelector("#player-reserved-cards").innerHTML = `Reserved cards: ${this.reserved.length}`;
         this.updateReservedDisplay();
+    }
+    updateOtherPlayerDisplay(currentPlayerId) {
+        var i = this.playerId;
+        if (this.playerId >= currentPlayerId) {
+            i -= 1;
+        }
+        var playerDisplay = document.querySelector(`#p${i}-display`);
+        playerDisplay.style.display = "block";
+        document.querySelector(`#p${i}-number`).innerHTML = `Player ${this.playerId}`;
+        document.querySelector(`#p${i}-score`).innerHTML = `Score: ${this.score.points}`;
+        document.querySelector(`#p${i}-avenger-points`).innerHTML = `Avenger points: ${this.score.avengerPoints}`;
+        document.querySelector(`#p${i}-blue-gems`).innerHTML = `Blue gems: ${this.currency.blue}`;
+        document.querySelector(`#p${i}-red-gems`).innerHTML = `Red gems: ${this.currency.red}`;
+        document.querySelector(`#p${i}-yellow-gems`).innerHTML = `Yellow gems: ${this.currency.yellow}`;
+        document.querySelector(`#p${i}-purple-gems`).innerHTML = `Purple gems: ${this.currency.purple}`;
+        document.querySelector(`#p${i}-orange-gems`).innerHTML = `Orange gems: ${this.currency.orange}`;
+        document.querySelector(`#p${i}-shield-tokens`).innerHTML = `Shield tokens: ${this.currency.shield}`;
+        document.querySelector(`#p${i}-blue-cards`).innerHTML = `Blue cards: ${this.cards.blue.length}`;
+        document.querySelector(`#p${i}-red-cards`).innerHTML = `Red cards: ${this.cards.red.length}`;
+        document.querySelector(`#p${i}-yellow-cards`).innerHTML = `Yellow cards: ${this.cards.yellow.length}`;
+        document.querySelector(`#p${i}-purple-cards`).innerHTML = `Purple cards: ${this.cards.purple.length}`;
+        document.querySelector(`#p${i}-orange-cards`).innerHTML = `Orange cards: ${this.cards.orange.length}`;
+        document.querySelector(`#p${i}-location-cards`).innerHTML = `Location cards: ${this.cards.location.length}`;
+        document.querySelector(`#p${i}-reserved-cards`).innerHTML = `Reserved cards: ${this.reserved.length}`;
     }
     takeAction(actionType, actionVal) {
         if (this.engine.gameState === "ended") {

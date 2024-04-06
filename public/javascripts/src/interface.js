@@ -13,7 +13,6 @@ var pickCardForm = document.getElementById("pick-card-form");
 var discardGemsForm = document.getElementById("discard-gems-form");
 const engine = new Engine();
 await engine.setupGame(window.location.pathname, true);
-console.log(`Table name: ${engine.tableName}`);
 const evtSource = new EventSource(`${window.location.origin}/events?game_id=${engine.tableName}`);
 evtSource.onmessage = (event) => {
     const parsedData = JSON.parse(event.data);

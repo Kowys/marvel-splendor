@@ -17,7 +17,6 @@ export class Engine {
         const data = await this.getGameStateFromDB(currentUrl);
         console.log(`Player count: ${data.num_players}`);
         console.log(`Player id: ${data.player_id}`);
-        console.log(`Table name: ${data.table_name}`);
         this.tableName = data.table_name;
         this.thisPlayerId = data.player_id;
         this.numberOfPlayers = data.num_players;
